@@ -1,8 +1,11 @@
 package ru.practicum.shareit.user;
+
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Data
 @Component
@@ -32,6 +35,14 @@ public class UserService {
     }
 
     public User getUserById(Long id) {
-       return userStorage.getUserById(id);
+        return userStorage.getUserById(id);
+    }
+
+    public void deleteUser(Long id) {
+        userStorage.deleteUserById(id);
+    }
+
+    List<User> getAllUsers() {
+        return userStorage.getAllUsers();
     }
 }

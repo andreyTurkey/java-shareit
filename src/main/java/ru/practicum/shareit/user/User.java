@@ -19,5 +19,5 @@ public class User {
 
     @NotBlank(message = "NAME can't be empty.") String name;
 
-    @Email @NotBlank String  email;
+    @Email @NotBlank String email;
 }

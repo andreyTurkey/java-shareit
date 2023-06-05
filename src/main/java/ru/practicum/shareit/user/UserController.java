@@ -1,9 +1,11 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
@@ -35,5 +37,16 @@ public class UserController {
     @GetMapping(value = "/{userId}")
     public User getUserById(@PathVariable Long userId) {
         return userService.getUserById(userId);
+    }
+
+    @GetMapping
+    public List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @DeleteMapping(value = "{id}")
+    public ResponseEntity deleteFriend(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User was deleted");
     }
 }

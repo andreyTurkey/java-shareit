@@ -1,16 +1,15 @@
 package ru.practicum.shareit.user;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.UserNotFoundException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+@Slf4j
 @Data
 @Component
 @Qualifier("UserStorage")
@@ -18,9 +17,9 @@ public class UserStorageImpl implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
 
-    private final List<String> emails = new ArrayList<>();
+    private final Set<String> emails = new HashSet<>();
 
-    private final List<String> deletedEmails = new ArrayList<>();
+    private final Set<String> deletedEmails = new HashSet<>();
 
     @Override
     public User getUserById(Long id) {
@@ -29,7 +28,11 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
-        return null;
+        List<User> allUsers = new ArrayList<>();
+        for (User user : users.values()) {
+            allUsers.add(user);
+        }
+        return allUsers;
     }
 
     @Override
@@ -50,6 +53,8 @@ public class UserStorageImpl implements UserStorage {
         if (changedUser.getEmail() != null) {
             if (!deletedEmails.contains(changedUser.getEmail())) {
                 user.setEmail(changedUser.getEmail());
+            } else if (changedUser.getEmail().equals(user.getEmail())) {
+                users.put(changedUser.getId(), user);
             } else {
                 throw new DuplicateEmailException("Email exist.");
             }
@@ -58,19 +63,22 @@ public class UserStorageImpl implements UserStorage {
         return users.get(changedUser.getId());
     }
 
-        private void updateEmail (User changedUser){
-            deletedEmails.add(users.get(changedUser.getId()).getEmail());
-            emails.remove(users.get(changedUser.getId()).getEmail());
-            emails.add(changedUser.getEmail());
-        }
-
-        @Override
-        public void deleteUserById (Integer id){
-
-        }
-
-        @Override
-        public void isUserExist (User user){
-            if (!users.containsKey(user.getId())) throw new UserNotFoundException("User is not exist");
-        }
+    private void updateEmail(User changedUser) {
+        deletedEmails.add(users.get(changedUser.getId()).getEmail());
+        emails.remove(users.get(changedUser.getId()).getEmail());
+        emails.add(changedUser.getEmail());
     }
+
+    @Override
+    public void deleteUserById(Long id) {
+        if (users.containsKey(id)) {
+            emails.remove(users.get(id).getEmail());
+            users.remove(id);
+        } else isUserExist(users.get(id));
+    }
+
+    @Override
+    public void isUserExist(User user) {
+        if (!users.containsKey(user.getId())) throw new UserNotFoundException("User is not exist");
+    }
+}
