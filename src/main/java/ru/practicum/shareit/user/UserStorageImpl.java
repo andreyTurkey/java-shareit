@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
@@ -80,5 +81,10 @@ public class UserStorageImpl implements UserStorage {
     @Override
     public void isUserExist(User user) {
         if (!users.containsKey(user.getId())) throw new UserNotFoundException("User is not exist");
+    }
+
+    @Override
+    public void isUserExistById(Long id) {
+        if (!users.containsKey(id)) throw new UserNotFoundException("User is not exist");
     }
 }

@@ -1,5 +1,7 @@
 package ru.practicum.shareit.user;
 
+import ru.practicum.shareit.user.model.User;
+
 import java.util.List;
 
 public interface UserStorage {
@@ -15,4 +17,6 @@ public interface UserStorage {
     void deleteUserById(Long id);
 
     void isUserExist(User user);
+
+    void isUserExistById(Long id);
 }
