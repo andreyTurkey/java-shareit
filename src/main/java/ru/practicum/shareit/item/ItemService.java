@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.UserStorage;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 @Data
@@ -70,7 +71,8 @@ public class ItemService {
     private void validationItem(Long itemId, Long userId) {
         itemStorage.isItemExists(itemId);
         userStorage.isUserExistById(userId);
-        if (itemStorage.getItemById(itemId).getOwner() != userId)
+        Long ownerId = itemStorage.getItemById(itemId).getOwner();
+        if (!Objects.equals(ownerId, userId))
             throw new UserNotFoundException("Пользователь не является владельцем вещи.");
     }
 
