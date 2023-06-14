@@ -9,15 +9,18 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
+
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 
     Long id;
 
-    @NotBlank(message = "NAME can't be empty.") String name;
+    @NotBlank(message = "NAME can't be empty.")
+    String name;
 
-    @Email @NotBlank String email;
+    @Email @NotBlank
+    String email;
 
     final List<Long> items = new ArrayList<>();
 
