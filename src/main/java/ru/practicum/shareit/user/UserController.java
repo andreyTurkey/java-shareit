@@ -27,29 +27,33 @@ public class UserController {
     @PostMapping
     public User addUser(@Valid @RequestBody User user) {
         userService.addUser(user);
+        log.trace(user + " - пользователь был добавлен");
         return user;
     }
 
     @PatchMapping(value = "/{userId}")
-    public User updateUser(@Valid @PathVariable Long userId, @RequestBody User user) {
+    public User updateUser(@PathVariable Long userId, @RequestBody User user) {
         user.setId(userId);
         userService.updateUser(user);
+        log.debug("Получен запрос на обновление пользователя с  ID = {} ", userId);
         return userService.getUserById(userId);
     }
 
     @GetMapping(value = "/{userId}")
     public User getUserById(@PathVariable Long userId) {
+        log.debug("Получен запрос  пользователя с  ID = {} ", userId);
         return userService.getUserById(userId);
     }
 
     @GetMapping
     public List<User> getAllUsers() {
+        log.debug("Получен запрос всех пользователей");
         return userService.getAllUsers();
     }
 
     @DeleteMapping(value = "{id}")
-    public ResponseEntity deleteFriend(@PathVariable Long id) {
+    public void deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok("User was deleted");
+        log.debug("Пользователь был удален");
     }
 }

@@ -1,15 +1,16 @@
 package ru.practicum.shareit.user;
 
 import lombok.Data;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 
-@Data
-@Component
+@Service
 public class UserService {
 
     private final UserStorage userStorage;
@@ -17,7 +18,7 @@ public class UserService {
     private Long count;
 
     @Autowired
-    public UserService(@Qualifier("UserStorage") UserStorage userStorage) {
+    public UserService(UserStorage userStorage) {
         this.userStorage = userStorage;
         count = 1L;
     }

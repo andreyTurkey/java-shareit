@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(ItemNotFoundException.class)
+    @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemNotFoundException(final ItemNotFoundException e) {
+    public ErrorResponse handleItemNotFoundException(final EntityNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 
@@ -22,25 +22,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleDuplicateEmailException(final DuplicateEmailException e) {
         log.error("Email exists.");
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
-        log.error("Invalid fields user");
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(BookingNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleBookingNotFoundException(final BookingNotFoundException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(RequestNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleRequestNotFoundException(final RequestNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 

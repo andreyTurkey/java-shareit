@@ -1,10 +1,7 @@
 package ru.practicum.shareit.item;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.ItemNotFoundException;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
@@ -16,10 +13,7 @@ import java.util.Map;
  * TODO Sprint add-controllers.
  */
 
-@Slf4j
-@Data
-@Component
-@Qualifier("ItemStorage")
+@Service
 public class ItemStorageImpl implements ItemStorage {
 
     private final Map<Long, Item> items = new HashMap<>();
@@ -62,14 +56,11 @@ public class ItemStorageImpl implements ItemStorage {
         String lowerText = text.toLowerCase();
         List<Item> textItem = new ArrayList<>();
         for (Long id : items.keySet()) {
-            if (items.get(id).getName().toLowerCase().contains(lowerText) &&
-                    items.get(id).getAvailable().equals(true) ||
-                    items.get(id).getDescription().toLowerCase().contains(lowerText) &&
-                            items.get(id).getAvailable().equals(true)) {
+            if (items.get(id).getAvailable() && (items.get(id).getName().toLowerCase().contains(lowerText) ||
+                    items.get(id).getDescription().toLowerCase().contains(lowerText))) {
                 textItem.add(items.get(id));
             }
         }
-        log.error(textItem + " - полученный лист после поиска");
         return textItem;
     }
 
@@ -91,6 +82,6 @@ public class ItemStorageImpl implements ItemStorage {
 
     @Override
     public void isItemExists(Long itemId) {
-        if (!items.containsKey(itemId)) throw new ItemNotFoundException("Вещь не найдена");
+        if (!items.containsKey(itemId)) throw new EntityNotFoundException("Вещь не найдена");
     }
 }

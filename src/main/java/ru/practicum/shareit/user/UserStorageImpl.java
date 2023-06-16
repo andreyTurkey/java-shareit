@@ -1,19 +1,13 @@
 package ru.practicum.shareit.user;
 
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateEmailException;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
-@Slf4j
-@Data
-@Component
-@Qualifier("UserStorage")
+@Service
 public class UserStorageImpl implements UserStorage {
 
     private final Map<Long, User> users = new HashMap<>();
@@ -29,11 +23,7 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public List<User> getAllUsers() {
-        List<User> allUsers = new ArrayList<>();
-        for (User user : users.values()) {
-            allUsers.add(user);
-        }
-        return allUsers;
+        return new ArrayList<>(users.values());
     }
 
     @Override
@@ -80,11 +70,11 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public void isUserExist(User user) {
-        if (!users.containsKey(user.getId())) throw new UserNotFoundException("User is not exist");
+        if (!users.containsKey(user.getId())) throw new EntityNotFoundException("User is not exist");
     }
 
     @Override
     public void isUserExistById(Long id) {
-        if (!users.containsKey(id)) throw new UserNotFoundException("User is not exist");
+        if (!users.containsKey(id)) throw new EntityNotFoundException("User is not exist");
     }
 }

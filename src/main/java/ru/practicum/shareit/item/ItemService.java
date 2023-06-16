@@ -5,7 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exception.UserNotFoundException;
+import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
@@ -18,8 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
-@Data
-@Component
+@Service
 public class ItemService {
 
     private final ItemStorage itemStorage;
@@ -31,7 +31,7 @@ public class ItemService {
     private Long count;
 
     @Autowired
-    public ItemService(@Qualifier("ItemStorage") ItemStorage itemStorage,
+    public ItemService(ItemStorage itemStorage,
                        UserStorage userStorage, ItemMapper itemMapper) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
@@ -51,7 +51,6 @@ public class ItemService {
 
     public Item updateItem(Map<String, Object> fields, Long userId, Long itemId) {
         validationItem(itemId, userId);
-        itemStorage.partialUpdate(fields, userId, itemId);
         return itemStorage.partialUpdate(fields, userId, itemId);
     }
 
@@ -73,7 +72,7 @@ public class ItemService {
         userStorage.isUserExistById(userId);
         Long ownerId = itemStorage.getItemById(itemId).getOwner();
         if (!Objects.equals(ownerId, userId))
-            throw new UserNotFoundException("Пользователь не является владельцем вещи.");
+            throw new EntityNotFoundException("Пользователь не является владельцем вещи.");
     }
 
     public List<Item> getItemByParam(String text) {
