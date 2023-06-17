@@ -1,9 +1,9 @@
 package ru.practicum.shareit.item;
 
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ItemStorage {
 
@@ -11,11 +11,9 @@ public interface ItemStorage {
 
     Item getItemById(Long id);
 
-    List<Item> getItems(List<Long> itemId);
+    List<Item> getItems(Long userId);
 
-    void isItemExists(Long itemId);
-
-    Item partialUpdate(Map<String, Object> fields, Long userId, Long itemId);
+    Item partialUpdate(ItemUpdateDto fields, Long userId, Long itemId);
 
     List<Item> getItemByParam(String text);
 }

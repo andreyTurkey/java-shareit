@@ -2,9 +2,8 @@ package ru.practicum.shareit.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -25,28 +24,27 @@ public class UserController {
     }
 
     @PostMapping
-    public User addUser(@Valid @RequestBody User user) {
-        userService.addUser(user);
-        log.trace(user + " - пользователь был добавлен");
-        return user;
+    public UserDto addUser(@Valid @RequestBody UserDto userDto) {
+        log.trace(userDto + " - пользователь был добавлен");
+        return userService.addUser(userDto);
     }
 
     @PatchMapping(value = "/{userId}")
-    public User updateUser(@PathVariable Long userId, @RequestBody User user) {
-        user.setId(userId);
-        userService.updateUser(user);
+    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
+        userDto.setId(userId);
+        userService.updateUser(userDto);
         log.debug("Получен запрос на обновление пользователя с  ID = {} ", userId);
         return userService.getUserById(userId);
     }
 
     @GetMapping(value = "/{userId}")
-    public User getUserById(@PathVariable Long userId) {
+    public UserDto getUserById(@PathVariable Long userId) {
         log.debug("Получен запрос  пользователя с  ID = {} ", userId);
         return userService.getUserById(userId);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.debug("Получен запрос всех пользователей");
         return userService.getAllUsers();
     }

@@ -15,15 +15,26 @@ public class ItemDto {
 
     Long id;
 
-    //@NotBlank(message = "NAME can't be empty.")
+    @NotBlank(message = "NAME can't be empty.")
     String name;
 
-    //@NotNull(message = "DESCRIPTION can't be empty.")
+    @NotNull(message = "DESCRIPTION can't be empty.")
     String description;
 
     Long owner;
 
-    //@NotNull
+    @NotNull
     Boolean available;
+
+    @Override
+    public String toString() {
+        return "ItemDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", owner=" + owner +
+                ", available=" + available +
+                '}';
+    }
 }
 

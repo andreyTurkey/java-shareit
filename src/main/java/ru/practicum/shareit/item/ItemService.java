@@ -1,22 +1,19 @@
 package ru.practicum.shareit.item;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EntityNotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.UserStorage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,7 +25,6 @@ public class ItemService {
 
     private final ItemMapper itemMapper;
 
-    private Long count;
 
     @Autowired
     public ItemService(ItemStorage itemStorage,
@@ -36,51 +32,39 @@ public class ItemService {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
         this.itemMapper = itemMapper;
-        count = 1L;
     }
 
-    public Item addItem(Item item) {
-        userStorage.isUserExistById(item.getOwner());
-        item.setId(count);
-        count++;
+    public ItemDto addItem(ItemDto itemDto) {
+        userStorage.isUserExistById(itemDto.getOwner());
+        Item item = itemMapper.getItem(itemDto);
         itemStorage.addItem(item);
-        User user = userStorage.getUserById(item.getOwner());
-        user.addItems(item);
-        return itemStorage.getItemById(item.getId());
+        return itemMapper.getItemDto(itemStorage.getItemById(item.getId()));
     }
 
-    public Item updateItem(Map<String, Object> fields, Long userId, Long itemId) {
+    public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long userId, Long itemId) {
         validationItem(itemId, userId);
-        return itemStorage.partialUpdate(fields, userId, itemId);
+        Item itemDto = itemStorage.partialUpdate(itemUpdateDto, userId, itemId);
+        return itemMapper.getItemDto(itemDto);
     }
 
-    public Item getItemById(Long itemId, Long userId) {
-        itemStorage.isItemExists(itemId);
-        userStorage.isUserExistById(userId);
-        return itemStorage.getItemById(itemId);
+    public ItemDto getItemById(Long itemId) {
+        return itemMapper.getItemDto(itemStorage.getItemById(itemId));
     }
 
-    public List<Item> getAllItemByUserId(Long userId) {
-        userStorage.isUserExistById(userId);
-        User user = userStorage.getUserById(userId);
-        List<Long> itemId = user.getItems();
-        return itemStorage.getItems(itemId);
+    public List<ItemDto> getAllItemByUserId(Long userId) {
+        return itemStorage.getItems(userId).stream()
+                .map(itemMapper::getItemDto).collect(Collectors.toList());
     }
 
     private void validationItem(Long itemId, Long userId) {
-        itemStorage.isItemExists(itemId);
-        userStorage.isUserExistById(userId);
         Long ownerId = itemStorage.getItemById(itemId).getOwner();
         if (!Objects.equals(ownerId, userId))
             throw new EntityNotFoundException("Пользователь не является владельцем вещи.");
     }
 
-    public List<Item> getItemByParam(String text) {
+    public List<ItemDto> getItemByParam(String text) {
         if (text.isBlank()) return new ArrayList<>();
-        return itemStorage.getItemByParam(text);
-    }
-
-    public ItemDto getItemDto(Item item) {
-        return itemMapper.getItemDto(item);
+        return itemStorage.getItemByParam(text).stream()
+                .map(itemMapper::getItemDto).collect(Collectors.toList());
     }
 }

@@ -1,7 +1,8 @@
 package ru.practicum.shareit.item;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.EntityNotFoundException;
+import ru.practicum.shareit.item.dto.ItemUpdateDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
@@ -13,41 +14,32 @@ import java.util.Map;
  * TODO Sprint add-controllers.
  */
 
+@Slf4j
 @Service
 public class ItemStorageImpl implements ItemStorage {
 
     private final Map<Long, Item> items = new HashMap<>();
 
+    private final Map<Long, List<Item>> userItems = new HashMap<>();
+
+    private Long count = 0L;
+
     @Override
     public Item addItem(Item item) {
+        count++;
+        item.setId(count);
         items.put(item.getId(), item);
+        addItemToUserList(item);
         return items.get(item.getId());
     }
 
     @Override
-    public Item partialUpdate(Map<String, Object> fields, Long userId, Long itemId) {
+    public Item partialUpdate(ItemUpdateDto itemUpdateDto, Long userId, Long itemId) {
         Item item = items.get(itemId);
-        for (String field : fields.keySet()) {
-            if (field.equals("id")) {
-                Integer id = (Integer) fields.get("id");
-                Long newId = id.longValue();
-                item.setId(newId);
-            }
-            if (field.equals("name")) {
-                item.setName((String) fields.get("name"));
-            }
-            if (field.equals("description")) {
-                item.setDescription((String) fields.get("description"));
-            }
-            if (field.equals("owner")) {
-                Integer ownerId = (Integer) fields.get("owner");
-                Long newOwnerId = ownerId.longValue();
-                item.setOwner(newOwnerId);
-            }
-            if (field.equals("available")) {
-                item.setAvailable((Boolean) fields.get("available"));
-            }
-        }
+        if (itemUpdateDto.getName() != null) item.setName(itemUpdateDto.getName());
+        if (itemUpdateDto.getDescription() != null) item.setDescription(itemUpdateDto.getDescription());
+        if (itemUpdateDto.getAvailable() != null) item.setAvailable(itemUpdateDto.getAvailable());
+        addItemToUserList(item);
         return item;
     }
 
@@ -70,18 +62,21 @@ public class ItemStorageImpl implements ItemStorage {
     }
 
     @Override
-    public List<Item> getItems(List<Long> itemId) {
-        List<Item> newItems = new ArrayList<>();
-        for (Long id : itemId) {
-            if (items.containsKey(id)) {
-                newItems.add(items.get(id));
-            }
-        }
-        return newItems;
+    public List<Item> getItems(Long userId) {
+        return userItems.get(userId);
     }
 
-    @Override
-    public void isItemExists(Long itemId) {
-        if (!items.containsKey(itemId)) throw new EntityNotFoundException("Вещь не найдена");
+    private List<Item> addItemToUserList(Item item) {
+        Item oldItem = items.get(item.getId());
+        List<Item> newUserItems = userItems.get(item.getOwner());
+        if (newUserItems != null) {
+            newUserItems.remove(oldItem);
+            newUserItems.add(item);
+        } else {
+            newUserItems = new ArrayList<>();
+            newUserItems.add(item);
+        }
+        userItems.put(item.getOwner(), newUserItems);
+        return newUserItems;
     }
 }

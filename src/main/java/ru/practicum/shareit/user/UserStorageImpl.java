@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.EntityNotFoundException;
@@ -7,6 +8,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
+@Slf4j
 @Service
 public class UserStorageImpl implements UserStorage {
 
@@ -15,6 +17,8 @@ public class UserStorageImpl implements UserStorage {
     private final Set<String> emails = new HashSet<>();
 
     private final Set<String> deletedEmails = new HashSet<>();
+
+    private Long count = 0L;
 
     @Override
     public User getUserById(Long id) {
@@ -32,6 +36,8 @@ public class UserStorageImpl implements UserStorage {
             throw new DuplicateEmailException("Email exists.");
         }
         emails.add(newUser.getEmail());
+        count++;
+        newUser.setId(count);
         users.put(newUser.getId(), newUser);
         return newUser;
     }

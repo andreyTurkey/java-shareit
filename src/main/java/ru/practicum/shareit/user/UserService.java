@@ -1,50 +1,45 @@
 package ru.practicum.shareit.user;
 
-import lombok.Data;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserStorage userStorage;
 
-    private Long count;
+    private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(UserStorage userStorage, UserMapper userMapper) {
         this.userStorage = userStorage;
-        count = 1L;
+        this.userMapper = userMapper;
     }
 
-    public User addUser(User newUser) {
-        newUser.setId(count);
-        userStorage.createUser(newUser);
-        count++;
-        return newUser;
+    public UserDto addUser(UserDto newUser) {
+        return userMapper.getUserDto(userStorage.createUser(userMapper.getUser(newUser)));
     }
 
-    public User updateUser(User changedUser) {
-        userStorage.isUserExist(changedUser);
-        userStorage.updateUser(changedUser);
+    public UserDto updateUser(UserDto changedUser) {
+        userStorage.updateUser(userMapper.getUser(changedUser));
         return changedUser;
     }
 
-    public User getUserById(Long id) {
-        return userStorage.getUserById(id);
+    public UserDto getUserById(Long id) {
+        return userMapper.getUserDto(userStorage.getUserById(id));
     }
 
     public void deleteUser(Long id) {
         userStorage.deleteUserById(id);
     }
 
-    List<User> getAllUsers() {
-        return userStorage.getAllUsers();
+    List<UserDto> getAllUsers() {
+        return userStorage.getAllUsers().stream().map(userMapper::getUserDto).collect(Collectors.toList());
     }
 }
