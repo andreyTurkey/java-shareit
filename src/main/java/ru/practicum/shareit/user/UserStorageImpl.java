@@ -3,7 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateEmailException;
-import ru.practicum.shareit.exception.EntityNotFoundException;
+import ru.practicum.shareit.exception.EntityNotFoundExceptionCustom;
 import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
@@ -76,11 +76,11 @@ public class UserStorageImpl implements UserStorage {
 
     @Override
     public void isUserExist(User user) {
-        if (!users.containsKey(user.getId())) throw new EntityNotFoundException("User is not exist");
+        if (!users.containsKey(user.getId())) throw new EntityNotFoundExceptionCustom("User is not exist");
     }
 
     @Override
     public void isUserExistById(Long id) {
-        if (!users.containsKey(id)) throw new EntityNotFoundException("User is not exist");
+        if (!users.containsKey(id)) throw new EntityNotFoundExceptionCustom("User is not exist");
     }
 }

@@ -18,7 +18,6 @@ public class ItemMapper {
 
     public Item getItem(ItemDto itemDto) {
         return Item.builder()
-                .owner(itemDto.getOwner())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())

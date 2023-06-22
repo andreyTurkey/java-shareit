@@ -3,7 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.EntityNotFoundException;
+import ru.practicum.shareit.exception.EntityNotFoundExceptionCustom;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemUpdateDto;
@@ -59,7 +59,7 @@ public class ItemService {
     private void validationItem(Long itemId, Long userId) {
         Long ownerId = itemStorage.getItemById(itemId).getOwner();
         if (!Objects.equals(ownerId, userId))
-            throw new EntityNotFoundException("Пользователь не является владельцем вещи.");
+            throw new EntityNotFoundExceptionCustom("Пользователь не является владельцем вещи.");
     }
 
     public List<ItemDto> getItemByParam(String text) {

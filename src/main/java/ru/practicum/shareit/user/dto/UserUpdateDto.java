@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 @Setter
 public class UserUpdateDto {
 
+    Long id;
+
     String name;
 
     String email;
