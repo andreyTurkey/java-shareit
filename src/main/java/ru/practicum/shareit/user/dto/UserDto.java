@@ -1,38 +1,31 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.user.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Item {
+public class UserDto {
 
     Long id;
 
     @NotBlank(message = "NAME can't be empty.")
     String name;
 
-    @NotNull(message = "DESCRIPTION can't be empty.")
-    String description;
-
-    Long owner;
-
-    @NotNull
-    Boolean available;
+    @Email @NotBlank
+    String email;
 
     @Override
     public String toString() {
-        return "Item{" +
+        return "UserDto{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", owner=" + owner +
-                ", available=" + available +
+                ", email='" + email + '\'' +
                 '}';
     }
 }
