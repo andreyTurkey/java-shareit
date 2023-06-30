@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class BookingAddDto {
-
     Long id;
 
     Long itemId;
