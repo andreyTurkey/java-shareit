@@ -21,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 public class User {
 
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 

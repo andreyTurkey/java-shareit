@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 @Getter
 @Setter
 @Builder
+@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDto {
 
@@ -19,13 +20,4 @@ public class UserDto {
 
     @Email @NotBlank
     String email;
-
-    @Override
-    public String toString() {
-        return "UserDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

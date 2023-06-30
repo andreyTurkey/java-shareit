@@ -11,16 +11,21 @@ public class ItemMapper {
                 .id(item.getId())
                 .owner(item.getOwner())
                 .name(item.getName())
+                .comments(item.getComments())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .build();
     }
 
     public Item getItem(ItemDto itemDto) {
-        return Item.builder()
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .build();
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setOwner(itemDto.getOwner());
+        item.setComments(itemDto.getComments());
+        item.setAvailable(itemDto.getAvailable());
+
+        return item;
     }
 }

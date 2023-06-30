@@ -1,8 +1,7 @@
-package ru.practicum.shareit.booking.dto;
+package ru.practicum.shareit.item.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -14,19 +13,20 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class BookingDto {
+public class CommentDto {
 
     Long id;
 
+    @NotNull
     Item item;
 
-    User booker;
-
-    BookingState status;
+    User user;
 
     @NotNull
-    LocalDateTime start;
+    String text;
 
     @NotNull
-    LocalDateTime end;
+    String authorName;
+
+    LocalDateTime created;
 }

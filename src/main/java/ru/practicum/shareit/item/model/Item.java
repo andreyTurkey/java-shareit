@@ -2,18 +2,19 @@ package ru.practicum.shareit.item.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "items", schema = "public")
 @Getter
 @Setter
-@Builder
 @ToString
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
 
@@ -30,12 +31,17 @@ public class Item {
     @Column(name = "description", nullable = false)
     String description;
 
-    @Column(name = "user_id")
+    @Column(name = "owner")
     Long owner;
 
     @NotNull
-    @Column(name = "owner", nullable = false)
+    @Column(name = "available", nullable = false)
     Boolean available;
+
+    @ElementCollection
+    @CollectionTable(name="comments", joinColumns=@JoinColumn(name="item_id"))
+    @Column(name="id")
+    List<Long> comments = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

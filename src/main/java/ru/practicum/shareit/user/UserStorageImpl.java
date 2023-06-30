@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.EntityNotFoundExceptionCustom;
@@ -8,7 +7,6 @@ import ru.practicum.shareit.user.model.User;
 
 import java.util.*;
 
-@Slf4j
 @Service
 public class UserStorageImpl implements UserStorage {
 
