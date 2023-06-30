@@ -35,7 +35,7 @@ public class BookingServiceImpl implements BookingServiceDB {
     public BookingDto addBooking(BookingAddDto bookingAddDto) {
         BookingDto bookingDto = bookingMapperAdd.getBookingDto(bookingAddDto);
 
-        if (bookingDto.getItem().getOwner() == bookingAddDto.getUserId())
+        if (bookingDto.getItem().getOwner().equals(bookingAddDto.getUserId()))
             throw new EntityNotFoundExceptionCustom("Владелец вещи не может создавать бронирование");
 
         bookingDto.setStatus(BookingState.WAITING);
@@ -54,7 +54,7 @@ public class BookingServiceImpl implements BookingServiceDB {
     @Override
     public BookingDto updateStatus(Long bookerId, Long bookingId, String text) {
         Booking booking = bookingRepository.getById(bookingId);
-        if (!(booking.getItem().getOwner() == bookerId))
+        if (!(booking.getItem().getOwner().equals(bookerId)))
             throw new EntityNotFoundExceptionCustom("Проверьте ID пользователя");
         if (text.equals("true")) {
             if (booking.getStatus().equals(BookingState.APPROVED))
@@ -69,7 +69,7 @@ public class BookingServiceImpl implements BookingServiceDB {
     @Override
     public BookingDto getBookingById(Long bookingId, Long bookerId, Long ownerId) {
         Booking booking = bookingRepository.getById(bookingId);
-        if (booking.getItem().getOwner() == ownerId || booking.getUser().getId() == bookerId) {
+        if (booking.getItem().getOwner().equals(ownerId) || booking.getUser().getId().equals(bookerId)) {
             return bookingMapper.getBookingDto(booking);
         } else {
             throw new EntityNotFoundExceptionCustom("Проверьте ID пользователя");
