@@ -1,8 +1,8 @@
 package ru.practicum.shareit.exception;
 
-public class AvailableException extends RuntimeException {
+public class NotAvailableException extends RuntimeException {
 
-    public AvailableException(String message) {
+    public NotAvailableException(String message) {
         super(message);
     }
 }

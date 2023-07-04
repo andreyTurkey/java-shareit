@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingAddDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -11,44 +11,42 @@ import java.util.List;
 
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
-    BookingServiceDB bookingServiceDB;
+    private BookingService bookingServiceDB;
 
-    @Autowired
-    public BookingController(BookingServiceDB bookingServiceDB) {
-        this.bookingServiceDB = bookingServiceDB;
-    }
+    private final String USER_ID = "X-Sharer-User-Id";
+
 
     @PostMapping
     public BookingDto addBooking(@Valid @RequestBody BookingAddDto bookingAddDto,
-                                 @RequestHeader(value = "X-Sharer-User-Id") Long bookerId) {
-        log.error(bookingAddDto + " - получен запрос на добавление вещи");
+                                 @RequestHeader(value = USER_ID) Long bookerId) {
+        log.debug(bookingAddDto + " - получен запрос на добавление вещи");
         bookingAddDto.setUserId(bookerId);
-        log.error(bookingAddDto + " - вещь была добавлена");
         return bookingServiceDB.addBooking(bookingAddDto);
     }
 
     @PatchMapping(value = "/{bookingId}")
     public BookingDto updateStatus(@Valid
-                                   @RequestHeader(value = "X-Sharer-User-Id") Long bookerId,
+                                   @RequestHeader(value = USER_ID) Long bookerId,
                                    @PathVariable("bookingId") Long bookingId,
-                                   @RequestParam(value = "approved") String text) {
-        log.error("Бронирование с ID = {} изменено на статус {}", bookingId, text);
-        return bookingServiceDB.updateStatus(bookerId, bookingId, text);
+                                   @RequestParam(value = "approved") Boolean APPROVED) {
+        log.debug("Получен запрос на изменение статуса бронирования с ID = {} на статус {}", bookingId, APPROVED);
+        return bookingServiceDB.updateStatus(bookerId, bookingId, APPROVED);
     }
 
     @GetMapping(value = "/{bookingId}")
     public BookingDto getBookingByIdByUserId(
             @PathVariable("bookingId") Long bookingId,
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestHeader(value = USER_ID) Long userId) {
         log.debug("Бронирование с ID = {} было запрошена", bookingId);
         return bookingServiceDB.getBookingById(bookingId, userId, userId);
     }
 
     @GetMapping
-    public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = "X-Sharer-User-Id") Long bookerId,
+    public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = USER_ID) Long bookerId,
                                                      @RequestParam(value = "state", required = false,
                                                              defaultValue = "ALL") String state) {
         log.debug("Запрошены все бронирования пользователя ID = {}", bookerId);
@@ -56,7 +54,7 @@ public class BookingController {
     }
 
     @GetMapping(value = "/owner")
-    public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = "X-Sharer-User-Id") Long ownerId,
+    public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = USER_ID) Long ownerId,
                                                     @RequestParam(value = "state", required = false,
                                                             defaultValue = "ALL") String state) {
         log.debug("Запрошены все бронирования пользователя ID = {}", ownerId);

@@ -17,6 +17,8 @@ public class BookingGetOwnerDto {
 
     Long bookerId;
 
+    Long itemId;
+
     BookingState status;
 
     LocalDateTime start;

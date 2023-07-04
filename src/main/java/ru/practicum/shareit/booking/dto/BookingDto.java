@@ -3,8 +3,8 @@ package ru.practicum.shareit.booking.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.BookingState;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -18,9 +18,9 @@ public class BookingDto {
 
     Long id;
 
-    Item item;
+    ItemDto item;
 
-    User booker;
+    UserDto booker;
 
     BookingState status;
 

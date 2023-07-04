@@ -2,23 +2,32 @@ package ru.practicum.shareit.item;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.CheckRentHistory;
+import ru.practicum.shareit.booking.dto.BookingGetOwnerDto;
+import ru.practicum.shareit.booking.dto.BookingMapperGetOwnerDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
+import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemServiceImpl /*implements ItemServiceDB*/ {
+public class ItemService {
 
     final ItemRepository itemRepository;
 
@@ -26,23 +35,19 @@ public class ItemServiceImpl /*implements ItemServiceDB*/ {
 
     final CheckRentHistory checkRentHistory;
 
-    final ItemMapper itemMapper;
-
-    final ItemMapperGetOwnerDto itemMapperGetOwnerDto;
-
-    final CommentMapper commentMapper;
-
     final CommentRepository commentRepository;
 
-    final CommentAddMapper commentAddMapper;
+    final BookingRepository bookingRepository;
 
-    //@Override
-    public ItemDto addItem(ItemDto itemDto) {
-        existsById(itemDto.getOwner());
-        return itemMapper.getItemDto(itemRepository.save(itemMapper.getItem(itemDto)));
+    public ItemDto getItemById(Long itemId) {
+        return ItemMapper.getItemDto(itemRepository.getById(itemId));
     }
 
-    //@Override
+    public ItemDto addItem(ItemDto itemDto) {
+        existsById(itemDto.getOwner());
+        return ItemMapper.getItemDto(itemRepository.save(ItemMapper.getItem(itemDto)));
+    }
+
     public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long userId, Long itemId) {
         existsById(userId);
         Item item = itemRepository.getReferenceById(itemId);
@@ -55,56 +60,103 @@ public class ItemServiceImpl /*implements ItemServiceDB*/ {
         if (itemUpdateDto.getAvailable() != null) {
             item.setAvailable(itemUpdateDto.getAvailable());
         }
-        return itemMapper.getItemDto(itemRepository.save(item));
+        return ItemMapper.getItemDto(itemRepository.save(item));
     }
 
-    //@Override
     public ItemPublicDto findByIdAndOwner(Long itemId, Long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() ->
                 new EntityNotFoundException("Вещь не найдена"));
-        return itemMapperGetOwnerDto.getItemGetOwnerDto(item, userId);
+
+        List<CommentPublicDto> publicComments = commentRepository.findAllByItemId(itemId).stream()
+                .map(CommentMapper::getPublicCommentDto)
+                .collect(Collectors.toList());
+
+        List<Booking> allBookingsByOwnerId = bookingRepository.findAllBookingByOwnerId(userId, itemId);
+
+        return ItemMapperGetOwnerDto.getPublicItemDto(item, userId, publicComments,
+                getLastAndNextBooking(itemId, allBookingsByOwnerId));
     }
 
-    //@Override
-    public List<ItemPublicDto> findAllByOwner(Long userId) {
-        List<Item> itemsByOwner = itemRepository.findAllByOwner(userId);
-        List<ItemPublicDto> itemsGetOwnerDto = itemsByOwner.stream().map((Item item) -> itemMapperGetOwnerDto
-                .getItemGetOwnerDto(item, userId)).collect(Collectors.toList());
-        return itemsGetOwnerDto;
+    public List<ItemPublicDto> findAllByUser(Long ownerId) {
+
+        List<ItemPublicDto> convertedItems = new ArrayList<>();
+
+        List<Item> itemsByOwner = itemRepository.findAllByOwner(ownerId);
+
+        List<Booking> allBookingsByUserId = bookingRepository.findBookingByUserId(ownerId);
+
+        List<CommentPublicDto> allCommentByItemByUser = commentRepository.findCommentByAllItemByUserId(ownerId).stream()
+                .map(CommentMapper::getPublicCommentDto).collect(Collectors.toList());
+
+        for (Item item : itemsByOwner) {
+            List<BookingGetOwnerDto> getLastAndNextBooking = getLastAndNextBooking(item.getId(), allBookingsByUserId);
+
+            convertedItems.add(ItemMapperGetOwnerDto.getPublicItemDto(item, ownerId, allCommentByItemByUser,
+                    getLastAndNextBooking));
+        }
+        return convertedItems;
     }
 
-    //@Override
+    public List<BookingGetOwnerDto> getLastAndNextBooking(Long itemId, List<Booking> allBookingByUser) {
+        List<BookingGetOwnerDto> lastAndNextBooking = new ArrayList<>();
+
+        List<Booking> allBookingByItemOrderEnd = allBookingByUser.stream().filter(booking -> {
+                    return booking.getItem().getId().equals(itemId);
+                })
+                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) )
+                .sorted(Comparator.comparing(Booking::getEnd).reversed()).collect(Collectors.toList());
+
+        if (!(allBookingByItemOrderEnd.size() == 0) && !allBookingByItemOrderEnd.get(0).getStatus()
+                .equals(BookingState.REJECTED)) {
+            lastAndNextBooking.add(BookingMapperGetOwnerDto.getBookingGetOwnerDto(allBookingByItemOrderEnd.get(0)));
+        } else {
+            lastAndNextBooking.add(null);
+        }
+
+        List<Booking> allBookingByItemOrderStart = allBookingByUser.stream().filter(booking -> {
+                    return booking.getItem().getId().equals(itemId);
+
+                }).filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                .sorted(Comparator.comparing(Booking::getEnd)).collect(Collectors.toList());
+
+        if (!(allBookingByItemOrderStart.size() == 0) && !allBookingByItemOrderStart.get(0).getStatus()
+                .equals(BookingState.REJECTED)) {
+            lastAndNextBooking.add(BookingMapperGetOwnerDto.getBookingGetOwnerDto(allBookingByItemOrderStart.get(0)));
+        } else {
+            lastAndNextBooking.add(null);
+        }
+        return lastAndNextBooking;
+    }
+
     public List<ItemDto> getItemByParam(String text) {
         if (text.isBlank()) {
             return new ArrayList<>();
         }
-
         return itemRepository.findByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text)
                 .stream()
-                .map(itemMapper::getItemDto)
+                .map(ItemMapper::getItemDto)
                 .collect(Collectors.toList());
     }
 
-    //@Override
-    public ItemDto getItemById(Long itemId) {
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException(
-                "Вещь не найдена."));
-        return itemMapper.getItemDto(item);
-    }
-
-    //@Override
     public CommentDto addComment(CommentAddDto commentAddDto) {
         existsById(commentAddDto.getUserId());
-
         checkRentHistory.isUserTookItem(commentAddDto);
-
-        return commentMapper.getCommentDto(commentRepository.save(commentMapper.getComment(
-                commentAddMapper.getCommentDto(commentAddDto))));
+        User user = userRepository.getReferenceById(commentAddDto.getUserId());
+        Item item = itemRepository.getReferenceById(commentAddDto.getItemId());
+        return CommentMapper.getCommentDto(commentRepository.save(CommentMapper.getComment(
+                CommentAddMapper.getCommentDto(commentAddDto, user, item))));
     }
 
-    private void existsById(Long userId) {
+    public void existsById(Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new EntityNotFoundException("Пользователь не найден.");
         }
+    }
+
+    public boolean existsByItemId(Long itemId) {
+        if (!itemRepository.existsById(itemId)) {
+            throw new EntityNotFoundException("Пользователь не найден.");
+        }
+        return true;
     }
 }

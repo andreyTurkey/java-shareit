@@ -1,7 +1,7 @@
 package ru.practicum.shareit.user;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
@@ -14,15 +14,11 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
 
-    final UserServiceImpl userService;
-
-    @Autowired
-    public UserController(UserServiceImpl userService) {
-        this.userService = userService;
-    }
+    final UserService userService;
 
     @PostMapping
     public UserDto addUser(@Valid @RequestBody UserDto userDto) {

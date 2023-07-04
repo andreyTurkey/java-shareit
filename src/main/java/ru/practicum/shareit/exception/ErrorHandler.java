@@ -14,34 +14,30 @@ import javax.persistence.EntityNotFoundException;
 @RestControllerAdvice
 public class ErrorHandler {
 
-    @ExceptionHandler(AvailableException.class)
+    @ExceptionHandler(NotAvailableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleAvailableException(final AvailableException e) {
+    public ErrorResponse handleAvailableException(final NotAvailableException e) {
+        log.error(e.getMessage() + " - ошибка валидации");
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleItemNotFoundException(final EntityNotFoundException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(EntityNotFoundExceptionCustom.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemNotFoundException(final EntityNotFoundExceptionCustom e) {
+        log.error(e.getMessage() + " - объект не найден");
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler(DuplicateEmailException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleDuplicateEmailException(final DuplicateEmailException e) {
-        log.error("Email exists.");
+        log.error(e.getMessage() + " - ошибка валидации EMAIL");
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleThereIsNoSuchUserException(MethodArgumentNotValidException ex) {
-        log.error("Invalid fields");
+        log.error(ex.getMessage() + " - ошибка валидации");
         return new ResponseEntity<>(new ErrorResponse(ex.getFieldError().getDefaultMessage()), HttpStatus.BAD_REQUEST);
     }
 }

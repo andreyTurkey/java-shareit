@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 
@@ -14,21 +14,18 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
 
-    final ItemServiceDB itemService;
+    private final ItemService itemService;
 
-    @Autowired
-    public ItemController(ItemServiceDB itemService) {
-        this.itemService = itemService;
-    }
+    private final String USER_ID = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public ItemDto addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader(value = USER_ID) Long userId) {
         log.debug(itemDto + " - получен запрос на добавление вещи");
         itemDto.setOwner(userId);
-        log.debug(itemDto + " - вещь была добавлена");
         return itemService.addItem(itemDto);
     }
 
@@ -36,7 +33,7 @@ public class ItemController {
     public ItemDto partialUpdate(
             @RequestBody ItemUpdateDto itemUpdateDto,
             @PathVariable("itemId") Long itemId,
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestHeader(value = USER_ID) Long userId) {
         log.debug("Вещь с ID = {} был обновлен", itemId);
         return itemService.updateItem(itemUpdateDto, userId, itemId);
     }
@@ -44,15 +41,15 @@ public class ItemController {
     @GetMapping(value = "/{itemId}")
     public ItemPublicDto getItemByIdByUserId(
             @PathVariable("itemId") Long itemId,
-            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+            @RequestHeader(value = USER_ID) Long userId) {
         log.debug("Вещь с ID = {} была запрошена", itemId);
         return itemService.findByIdAndOwner(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemPublicDto> getAllByOwner(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public List<ItemPublicDto> getAllByUser(@RequestHeader(value = USER_ID) Long userId) {
         log.debug("Запрос всех вещей пользователя ID = {}", userId);
-        return itemService.findAllByOwner(userId);
+        return itemService.findAllByUser(userId);
     }
 
     @GetMapping("/search")
@@ -63,12 +60,11 @@ public class ItemController {
 
     @PostMapping(value = "/{itemId}/comment")
     public CommentDto addComment(@PathVariable("itemId") Long itemId, @Valid @RequestBody CommentAddDto commentAddDto,
-                                 @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+                                 @RequestHeader(value = USER_ID) Long userId) {
         log.debug(commentAddDto + " - получен запрос на добавление отзыва");
         commentAddDto.setUserId(userId);
         commentAddDto.setItemId(itemId);
         commentAddDto.setCreated(LocalDateTime.now());
-        log.debug(commentAddDto + " - отзыв был добавлен");
         return itemService.addComment(commentAddDto);
     }
 }

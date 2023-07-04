@@ -12,37 +12,30 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl /*implements UserServiceDB*/ {
+public class UserService {
 
     private final UserRepository userRepository;
 
-    private final UserMapper userMapper;
-
-    //@Override
-    public UserDto addUser(UserDto userDto) {
-        return userMapper.getUserDto(userRepository.save(userMapper.getUser(userDto)));
+    public UserDto getUserById(Long userId) {
+        return UserMapper.getUserDto(userRepository.getReferenceById(userId));
     }
 
-    //@Override
+    public UserDto addUser(UserDto userDto) {
+        return UserMapper.getUserDto(userRepository.save(UserMapper.getUser(userDto)));
+    }
+
     public UserDto updateUser(UserUpdateDto userUpdateDto) {
         User user = userRepository.getReferenceById(userUpdateDto.getId());
         if (userUpdateDto.getName() != null) user.setName(userUpdateDto.getName());
         if (userUpdateDto.getEmail() != null) user.setEmail(userUpdateDto.getEmail());
-        return userMapper.getUserDto(userRepository.save(user));
+        return UserMapper.getUserDto(userRepository.save(user));
     }
 
-    //@Override
-    public UserDto getUserById(Long userId) {
-        return userMapper.getUserDto(userRepository.getReferenceById(userId));
-    }
-
-    //@Override
     public void deleteUser(Long userId) {
         userRepository.deleteById(userId);
     }
 
-    //@Override
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream().map(userMapper::getUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream().map(UserMapper::getUserDto).collect(Collectors.toList());
     }
 }

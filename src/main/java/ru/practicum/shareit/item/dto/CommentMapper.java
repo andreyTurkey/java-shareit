@@ -1,11 +1,10 @@
 package ru.practicum.shareit.item.dto;
 
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Comment;
 
-@Component
 public class CommentMapper {
-    public CommentDto getCommentDto(Comment comment) {
+
+    public static CommentDto getCommentDto(Comment comment) {
         return new CommentDto.CommentDtoBuilder()
                 .id(comment.getId())
                 .authorName(comment.getUser().getName())
@@ -15,7 +14,7 @@ public class CommentMapper {
                 .build();
     }
 
-    public Comment getComment(CommentDto commentDto) {
+    public static Comment getComment(CommentDto commentDto) {
         Comment comment = new Comment();
         comment.setId(commentDto.getId());
         comment.setItem(commentDto.getItem());
@@ -25,7 +24,7 @@ public class CommentMapper {
         return comment;
     }
 
-    public CommentPublicDto getPublicCommentDto(Comment comment) {
+    public static CommentPublicDto getPublicCommentDto(Comment comment) {
         return new CommentPublicDto.CommentPublicDtoBuilder()
                 .id(comment.getId())
                 .created(comment.getCreated())
