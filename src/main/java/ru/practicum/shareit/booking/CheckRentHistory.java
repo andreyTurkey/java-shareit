@@ -1,28 +1,37 @@
 package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.item.dto.CommentAddDto;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 @Component
 @AllArgsConstructor
 public class CheckRentHistory {
 
-    private BookingRepository bookingRepository;
+    final EntityManager em;
 
-    public void isUserTookItem(CommentAddDto commentAddDto) {
+    public List<Booking> getAllBookingByUserIdInPastOrderByIdDesc(Long userId) {
+        List<Booking> bookings = em.createQuery(
+                        "SELECT b from Booking b join Item i on b.item.id = i.id " +
+                                "WHERE b.user.id =:userId AND b.status NOT LIKE 'REJECTED' " +
+                                "AND  b.end < now() ORDER BY b.id DESC")
+                .setParameter("userId", userId)
+                .getResultList();
+        return bookings;
+    }
+
+    public boolean isUserTookItem(CommentAddDto commentAddDto) {
         LocalDateTime now = LocalDateTime.now();
-        List<Booking> allBookingsByUserId = bookingRepository.findBookingByUserIdAndItemIdAndEndBeforeOrderByIdDesc(
-                commentAddDto.getUserId(), commentAddDto.getItemId(), now);
+        List<Booking> allBookingsByUserId = getAllBookingByUserIdInPastOrderByIdDesc(commentAddDto.getUserId());
         if (allBookingsByUserId.size() == 0) {
             throw new NotAvailableException("Пользователь не брал вещь в аренду.");
         }
+        return true;
     }
 }

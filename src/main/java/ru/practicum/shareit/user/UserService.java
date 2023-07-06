@@ -26,8 +26,12 @@ public class UserService {
 
     public UserDto updateUser(UserUpdateDto userUpdateDto) {
         User user = userRepository.getReferenceById(userUpdateDto.getId());
-        if (userUpdateDto.getName() != null) user.setName(userUpdateDto.getName());
-        if (userUpdateDto.getEmail() != null) user.setEmail(userUpdateDto.getEmail());
+        if (userUpdateDto.getName() != null) {
+            user.setName(userUpdateDto.getName());
+        }
+        if (userUpdateDto.getEmail() != null) {
+            user.setEmail(userUpdateDto.getEmail());
+        }
         return UserMapper.getUserDto(userRepository.save(user));
     }
 

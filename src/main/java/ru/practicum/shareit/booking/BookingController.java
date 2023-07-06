@@ -29,12 +29,11 @@ public class BookingController {
     }
 
     @PatchMapping(value = "/{bookingId}")
-    public BookingDto updateStatus(@Valid
-                                   @RequestHeader(value = USER_ID) Long bookerId,
+    public BookingDto updateStatus(@RequestHeader(value = USER_ID) Long bookerId,
                                    @PathVariable("bookingId") Long bookingId,
-                                   @RequestParam(value = "approved") Boolean APPROVED) {
-        log.debug("Получен запрос на изменение статуса бронирования с ID = {} на статус {}", bookingId, APPROVED);
-        return bookingServiceDB.updateStatus(bookerId, bookingId, APPROVED);
+                                   @RequestParam(value = "approved") Boolean approved) {
+        log.debug("Получен запрос на изменение статуса бронирования с ID = {} на статус {}", bookingId, approved);
+        return bookingServiceDB.updateStatus(bookerId, bookingId, approved);
     }
 
     @GetMapping(value = "/{bookingId}")
@@ -47,7 +46,7 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = USER_ID) Long bookerId,
-                                                     @RequestParam(value = "state", required = false,
+                                                     @RequestParam(value = "state",
                                                              defaultValue = "ALL") String state) {
         log.debug("Запрошены все бронирования пользователя ID = {}", bookerId);
         return bookingServiceDB.getAllBookingsByUserId(bookerId, state);
@@ -55,7 +54,7 @@ public class BookingController {
 
     @GetMapping(value = "/owner")
     public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = USER_ID) Long ownerId,
-                                                    @RequestParam(value = "state", required = false,
+                                                    @RequestParam(value = "state",
                                                             defaultValue = "ALL") String state) {
         log.debug("Запрошены все бронирования пользователя ID = {}", ownerId);
         return bookingServiceDB.getAllBookingsByOwnerId(ownerId, state);

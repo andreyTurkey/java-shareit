@@ -39,8 +39,7 @@ public class ItemController {
     }
 
     @GetMapping(value = "/{itemId}")
-    public ItemPublicDto getItemByIdByUserId(
-            @PathVariable("itemId") Long itemId,
+    public ItemPublicDto getItemByIdByUserId(@PathVariable("itemId") Long itemId,
             @RequestHeader(value = USER_ID) Long userId) {
         log.debug("Вещь с ID = {} была запрошена", itemId);
         return itemService.findByIdAndOwner(itemId, userId);

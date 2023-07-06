@@ -3,9 +3,7 @@ package ru.practicum.shareit.item;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.CheckRentHistory;
 import ru.practicum.shareit.booking.dto.BookingGetOwnerDto;
@@ -16,6 +14,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -37,7 +35,7 @@ public class ItemService {
 
     final CommentRepository commentRepository;
 
-    final BookingRepository bookingRepository;
+    final EntityManager em;
 
     public ItemDto getItemById(Long itemId) {
         return ItemMapper.getItemDto(itemRepository.getById(itemId));
@@ -71,10 +69,29 @@ public class ItemService {
                 .map(CommentMapper::getPublicCommentDto)
                 .collect(Collectors.toList());
 
-        List<Booking> allBookingsByOwnerId = bookingRepository.findAllBookingByOwnerId(userId, itemId);
+        List<Booking> allBookingsByOwnerId = getAllBookingByOwnerIdAndItemId(userId, itemId);
 
         return ItemMapperGetOwnerDto.getPublicItemDto(item, userId, publicComments,
                 getLastAndNextBooking(itemId, allBookingsByOwnerId));
+    }
+
+    public List<Booking> getAllBookingByOwnerIdAndItemId(Long ownerId, Long itemId) {
+        List<Booking> bookings = em.createQuery(
+                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:ownerId " +
+                                " AND b.item.id =:itemId " +
+                                " ORDER BY b.id DESC")
+                .setParameter("ownerId", ownerId)
+                .setParameter("itemId", itemId)
+                .getResultList();
+        return bookings;
+    }
+
+    public List<Booking> getAllBookingByOwnerId(Long ownerId) {
+        List<Booking> bookings = em.createQuery(
+                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id ORDER BY b.id DESC")
+                .setParameter("id", ownerId)
+                .getResultList();
+        return bookings;
     }
 
     public List<ItemPublicDto> findAllByUser(Long ownerId) {
@@ -83,13 +100,13 @@ public class ItemService {
 
         List<Item> itemsByOwner = itemRepository.findAllByOwner(ownerId);
 
-        List<Booking> allBookingsByUserId = bookingRepository.findBookingByUserId(ownerId);
+        List<Booking> allBookingsAllItemsByOwner = getAllBookingByOwnerId(ownerId);
 
         List<CommentPublicDto> allCommentByItemByUser = commentRepository.findCommentByAllItemByUserId(ownerId).stream()
                 .map(CommentMapper::getPublicCommentDto).collect(Collectors.toList());
 
         for (Item item : itemsByOwner) {
-            List<BookingGetOwnerDto> getLastAndNextBooking = getLastAndNextBooking(item.getId(), allBookingsByUserId);
+            List<BookingGetOwnerDto> getLastAndNextBooking = getLastAndNextBooking(item.getId(), allBookingsAllItemsByOwner);
 
             convertedItems.add(ItemMapperGetOwnerDto.getPublicItemDto(item, ownerId, allCommentByItemByUser,
                     getLastAndNextBooking));
@@ -97,7 +114,7 @@ public class ItemService {
         return convertedItems;
     }
 
-    public List<BookingGetOwnerDto> getLastAndNextBooking(Long itemId, List<Booking> allBookingByUser) {
+    private List<BookingGetOwnerDto> getLastAndNextBooking(Long itemId, List<Booking> allBookingByUser) {
         List<BookingGetOwnerDto> lastAndNextBooking = new ArrayList<>();
 
         List<Booking> allBookingByItemOrderEnd = allBookingByUser.stream().filter(booking -> {
@@ -147,15 +164,15 @@ public class ItemService {
                 CommentAddMapper.getCommentDto(commentAddDto, user, item))));
     }
 
-    public void existsById(Long userId) {
+    private void existsById(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("Пользователь не найден.");
+            throw new EntityNotFoundException("Проверьте ID = " + userId + " пользователя");
         }
     }
 
     public boolean existsByItemId(Long itemId) {
         if (!itemRepository.existsById(itemId)) {
-            throw new EntityNotFoundException("Пользователь не найден.");
+            throw new EntityNotFoundException("Вещь c ID =" + itemId + " не найдена.");
         }
         return true;
     }
