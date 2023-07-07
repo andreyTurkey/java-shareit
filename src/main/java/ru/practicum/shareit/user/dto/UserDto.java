@@ -6,10 +6,11 @@ import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 @Getter
 @Setter
-@Builder
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@ToString
 public class UserDto {
 
     Long id;
@@ -19,13 +20,4 @@ public class UserDto {
 
     @Email @NotBlank
     String email;
-
-    @Override
-    public String toString() {
-        return "UserDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                '}';
-    }
 }

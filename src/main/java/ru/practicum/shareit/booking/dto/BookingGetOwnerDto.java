@@ -3,10 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.BookingState;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -14,19 +11,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ToString
-public class BookingDto {
+public class BookingGetOwnerDto {
 
     Long id;
 
-    ItemDto item;
+    Long bookerId;
 
-    UserDto booker;
+    Long itemId;
 
     BookingState status;
 
-    @NotNull
     LocalDateTime start;
 
-    @NotNull
     LocalDateTime end;
 }

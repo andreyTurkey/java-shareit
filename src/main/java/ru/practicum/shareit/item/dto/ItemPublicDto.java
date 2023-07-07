@@ -2,16 +2,18 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.dto.BookingGetOwnerDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
 @Getter
 @Setter
 @ToString
-public class ItemDto {
+public class ItemPublicDto {
 
     Long id;
 
@@ -25,5 +27,10 @@ public class ItemDto {
 
     @NotNull
     Boolean available;
-}
 
+    BookingGetOwnerDto lastBooking;
+
+    BookingGetOwnerDto nextBooking;
+
+    List<CommentPublicDto> comments;
+}

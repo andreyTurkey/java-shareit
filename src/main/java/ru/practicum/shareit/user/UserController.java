@@ -1,9 +1,10 @@
 package ru.practicum.shareit.user;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserUpdateDto;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -13,24 +14,20 @@ import java.util.List;
  */
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
 
     final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @PostMapping
     public UserDto addUser(@Valid @RequestBody UserDto userDto) {
-        log.trace(userDto + " - пользователь был добавлен");
+        log.debug(userDto + " - пользователь был добавлен");
         return userService.addUser(userDto);
     }
 
     @PatchMapping(value = "/{userId}")
-    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserDto userDto) {
+    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserUpdateDto userDto) {
         userDto.setId(userId);
         userService.updateUser(userDto);
         log.debug("Получен запрос на обновление пользователя с  ID = {} ", userId);
