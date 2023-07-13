@@ -1,7 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingState;
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemService {
 
@@ -43,6 +43,9 @@ public class ItemService {
 
     public ItemDto addItem(ItemDto itemDto) {
         existsById(itemDto.getOwner());
+        if (itemDto.getRequestId() == null) {
+            itemDto.setRequestId(0L);
+        }
         return ItemMapper.getItemDto(itemRepository.save(ItemMapper.getItem(itemDto)));
     }
 
@@ -120,7 +123,7 @@ public class ItemService {
         List<Booking> allBookingByItemOrderEnd = allBookingByUser.stream().filter(booking -> {
                     return booking.getItem().getId().equals(itemId);
                 })
-                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()) )
+                .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
                 .sorted(Comparator.comparing(Booking::getEnd).reversed()).collect(Collectors.toList());
 
         if (!(allBookingByItemOrderEnd.size() == 0) && !allBookingByItemOrderEnd.get(0).getStatus()

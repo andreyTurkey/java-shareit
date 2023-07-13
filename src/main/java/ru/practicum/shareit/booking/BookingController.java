@@ -19,7 +19,6 @@ public class BookingController {
 
     private final String USER_ID = "X-Sharer-User-Id";
 
-
     @PostMapping
     public BookingDto addBooking(@Valid @RequestBody BookingAddDto bookingAddDto,
                                  @RequestHeader(value = USER_ID) Long bookerId) {
@@ -47,16 +46,20 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = USER_ID) Long bookerId,
                                                      @RequestParam(value = "state",
-                                                             defaultValue = "ALL") String state) {
+                                                             defaultValue = "ALL") String state,
+                                                     @RequestParam(value = "from", required = false) Integer from,
+                                                     @RequestParam(value = "size", required = false) Integer size) {
         log.debug("Запрошены все бронирования пользователя ID = {}", bookerId);
-        return bookingServiceDB.getAllBookingsByUserId(bookerId, state);
+        return bookingServiceDB.getAllBookingsByUserId(bookerId, state, from, size);
     }
 
     @GetMapping(value = "/owner")
     public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = USER_ID) Long ownerId,
+                                                    @RequestParam(value = "from", required = false) Integer from,
+                                                    @RequestParam(value = "size", required = false) Integer size,
                                                     @RequestParam(value = "state",
                                                             defaultValue = "ALL") String state) {
         log.debug("Запрошены все бронирования пользователя ID = {}", ownerId);
-        return bookingServiceDB.getAllBookingsByOwnerId(ownerId, state);
+        return bookingServiceDB.getAllBookingsByOwnerId(ownerId, state, from, size);
     }
 }

@@ -27,7 +27,6 @@ public class CheckRentHistory {
     }
 
     public boolean isUserTookItem(CommentAddDto commentAddDto) {
-        LocalDateTime now = LocalDateTime.now();
         List<Booking> allBookingsByUserId = getAllBookingByUserIdInPastOrderByIdDesc(commentAddDto.getUserId());
         if (allBookingsByUserId.size() == 0) {
             throw new NotAvailableException("Пользователь не брал вещь в аренду.");

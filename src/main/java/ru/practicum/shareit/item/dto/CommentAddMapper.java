@@ -10,13 +10,23 @@ public class CommentAddMapper {
 
     public static CommentDto getCommentDto(CommentAddDto commentAddDto, User user, Item item) {
 
-        return new CommentDto.CommentDtoBuilder()
+       /* return new CommentDto.CommentDtoBuilder()
                 .id(commentAddDto.getId())
                 .item(item)
                 .user(user)
                 .authorName(user.getName())
                 .text(commentAddDto.getText())
                 .created(commentAddDto.getCreated())
-                .build();
+                .build();*/
+
+        CommentDto commentDto = new CommentDto();
+        commentDto.setId(commentAddDto.getId());
+        commentDto.setItem(item);
+        commentDto.setUser(user);
+        commentDto.setAuthorName(user.getName());
+        commentDto.setText(commentAddDto.getText());
+        commentDto.setCreated(commentAddDto.getCreated());
+
+        return commentDto;
     }
 }

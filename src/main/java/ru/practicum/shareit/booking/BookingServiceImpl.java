@@ -3,7 +3,9 @@ package ru.practicum.shareit.booking;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.*;
 import ru.practicum.shareit.booking.model.Booking;
@@ -21,30 +23,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BookingServiceImpl implements BookingService {
 
-    final BookingRepository bookingRepository;
+    BookingRepository bookingRepository;
 
-    final ItemService itemService;
+    ItemService itemService;
 
-    final UserRepository userRepository;
+    UserRepository userRepository;
 
-    final EntityManager em;
-
-    public List<Booking> getAllBookingsByUserId(Long userId) {
-        List<Booking> bookings = em.createQuery("SELECT b from Booking b WHERE b.user.id =:id ORDER BY id DESC")
-                .setParameter("id", userId)
-                .getResultList();
-        return bookings;
-    }
+    EntityManager em;
 
     public List<Booking> getAllBookingsByUserIdAndFuture(Long userId) {
         List<Booking> bookings = em.createQuery(
-                "SELECT b from Booking b WHERE b.user.id =:id AND b.start > now() ORDER BY id DESC")
+                        "SELECT b from Booking b WHERE b.user.id =:id AND b.start > now() ORDER BY id DESC")
                 .setParameter("id", userId)
                 .getResultList();
         return bookings;
@@ -52,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
 
     public List<Booking> getAllBookingsByUserIdPast(Long userId) {
         List<Booking> bookings = em.createQuery(
-                "SELECT b from Booking b WHERE b.user.id =:id AND b.end < now() ORDER BY id DESC")
+                        "SELECT b from Booking b WHERE b.user.id =:id AND b.end < now() ORDER BY id DESC")
                 .setParameter("id", userId)
                 .getResultList();
         return bookings;
@@ -66,7 +60,7 @@ public class BookingServiceImpl implements BookingService {
         return bookings;
     }
 
-    public List<Booking> getAllBookingsByUserIdAndStatus(Long userId, BookingState  state) {
+    public List<Booking> getAllBookingsByUserIdAndStatus(Long userId, BookingState state) {
         List<Booking> bookings = em.createQuery(
                         "SELECT b from Booking b WHERE b.user.id =:id AND b.status  like :state")
                 .setParameter("id", userId)
@@ -135,14 +129,37 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByUserId(Long userId, String state) {
-        List<Booking> bookings;
-
+    public List<BookingDto> getAllBookingsByUserId(Long userId, String state, Integer from, Integer size) {
         userExistsById(userId);
+
+        if (from == null && size == null) {
+            return getAllBookingsByUserIdWithoutPageable(null, userId, state);
+        } else if (from < 0 || size <= 0) {
+            throw new NotAvailableException("Проверьте параметры запроса");
+        } else {
+            Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+            Pageable page = PageRequest.of(from > 0 ? from / size : 0, size, sortById);
+            return getAllBookingsByUserId(userId, page).stream().map(BookingMapper::getBookingDto)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public List<Booking> getAllBookingsByUserId(Long userId, Pageable page) {
+        List<Long> bookingsIds = bookingRepository.findBookingByUserId(userId, page).getContent().stream().map(t -> {
+            return t.getId();
+        }).collect(Collectors.toList());
+
+        List<Booking> findAllByPageable = bookingRepository.findAllByBookingsId(bookingsIds);
+
+        return findAllByPageable;
+    }
+
+    public List<BookingDto> getAllBookingsByUserIdWithoutPageable(Pageable page, Long userId, String state) {
+        List<Booking> bookings;
 
         switch (BookingState.getBookingState(state)) {
             case ALL:
-                bookings = getAllBookingsByUserId(userId);
+                bookings = getAllBookingsByUserId(userId, page);
                 break;
             case FUTURE:
                 bookings = getAllBookingsByUserIdAndFuture(userId);
@@ -201,7 +218,7 @@ public class BookingServiceImpl implements BookingService {
         return bookings;
     }
 
-    public List<Booking> getAllBookingByOwnerIdStatus(Long ownerId, BookingState  state) {
+    public List<Booking> getAllBookingByOwnerIdStatus(Long ownerId, BookingState state) {
         List<Booking> bookings = em.createQuery(
                         "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id " +
                                 " AND b.status  like :state ORDER BY b.id DESC")
@@ -212,7 +229,34 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByOwnerId(Long ownerId, String state) {
+    public List<BookingDto> getAllBookingsByOwnerId(Long ownerId, String state, Integer from, Integer size) {
+        userExistsById(ownerId);
+
+        if (from == null && size == null) {
+            return getAllBookingsByOwnerIdWithoutPageable(null, ownerId, state);
+        } else if (from < 0 || size <= 0) {
+            throw new NotAvailableException("Проверьте параметры запроса");
+        } else {
+            Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+
+            Pageable page = PageRequest.of(from > 0 ? from / size : 0, size, sortById);
+            return getAllBookingsByOwnerId(ownerId, page).stream().map(BookingMapper::getBookingDto)
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public List<Booking> getAllBookingsByOwnerId(Long ownerId, Pageable page) {
+        List<Long> bookingsIds = bookingRepository.findBookingByOwnerId(ownerId, page).getContent().stream().map(t -> {
+            return t.getId();
+        }).collect(Collectors.toList());
+
+        List<Booking> findAllByPageable = bookingRepository.findAllByBookingsId(bookingsIds);
+
+        return findAllByPageable;
+    }
+
+    public List<BookingDto> getAllBookingsByOwnerIdWithoutPageable(Pageable page, Long ownerId, String state) {
+
         List<Booking> bookings;
 
         userExistsById(ownerId);
@@ -225,7 +269,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = getAllBookingByOwnerIdFuture(ownerId);
                 break;
             case PAST:
-                bookings =  getAllBookingByOwnerIdPast(ownerId);
+                bookings = getAllBookingByOwnerIdPast(ownerId);
                 break;
             case CURRENT:
                 bookings = getAllBookingByOwnerIdCurrent(ownerId);

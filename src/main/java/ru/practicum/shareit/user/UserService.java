@@ -1,20 +1,23 @@
 package ru.practicum.shareit.user;
 
-import lombok.AllArgsConstructor;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserService {
 
-    private final UserRepository userRepository;
+    final UserRepository userRepository;
 
     public UserDto getUserById(Long userId) {
         return UserMapper.getUserDto(userRepository.getReferenceById(userId));
@@ -35,11 +38,18 @@ public class UserService {
         return UserMapper.getUserDto(userRepository.save(user));
     }
 
-    public void deleteUser(Long userId) {
+    public boolean deleteUser(Long userId) {
         userRepository.deleteById(userId);
+        return true;
     }
 
     public List<UserDto> getAllUsers() {
         return userRepository.findAll().stream().map(UserMapper::getUserDto).collect(Collectors.toList());
+    }
+
+    public void userExists(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("Пользователь ID = " + userId + " не найден.");
+        }
     }
 }
