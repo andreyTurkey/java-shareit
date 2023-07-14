@@ -3,12 +3,12 @@ package ru.practicum.shareit.user;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.UserNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.dto.UserUpdateDto;
 import ru.practicum.shareit.user.model.User;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,9 +47,10 @@ public class UserService {
         return userRepository.findAll().stream().map(UserMapper::getUserDto).collect(Collectors.toList());
     }
 
-    public void userExists(Long userId) {
+    public boolean isUserExists(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("Пользователь ID = " + userId + " не найден.");
+            throw new UserNotFoundException("Пользователь ID = " + userId + " не найден.");
         }
+        return true;
     }
 }

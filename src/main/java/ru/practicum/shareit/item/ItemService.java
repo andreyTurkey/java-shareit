@@ -11,8 +11,9 @@ import ru.practicum.shareit.booking.dto.BookingMapperGetOwnerDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -29,7 +30,7 @@ public class ItemService {
 
     final ItemRepository itemRepository;
 
-    final UserRepository userRepository;
+    final UserService userService;
 
     final CheckRentHistory checkRentHistory;
 
@@ -42,7 +43,7 @@ public class ItemService {
     }
 
     public ItemDto addItem(ItemDto itemDto) {
-        existsById(itemDto.getOwner());
+        userService.isUserExists(itemDto.getOwner());
         if (itemDto.getRequestId() == null) {
             itemDto.setRequestId(0L);
         }
@@ -50,7 +51,7 @@ public class ItemService {
     }
 
     public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long userId, Long itemId) {
-        existsById(userId);
+        userService.isUserExists(userId);
         Item item = itemRepository.getReferenceById(itemId);
         if (itemUpdateDto.getName() != null) {
             item.setName(itemUpdateDto.getName());
@@ -161,14 +162,14 @@ public class ItemService {
     public CommentDto addComment(CommentAddDto commentAddDto) {
         existsById(commentAddDto.getUserId());
         checkRentHistory.isUserTookItem(commentAddDto);
-        User user = userRepository.getReferenceById(commentAddDto.getUserId());
+        UserDto userDto = userService.getUserById(commentAddDto.getUserId());
         Item item = itemRepository.getReferenceById(commentAddDto.getItemId());
         return CommentMapper.getCommentDto(commentRepository.save(CommentMapper.getComment(
-                CommentAddMapper.getCommentDto(commentAddDto, user, item))));
+                CommentAddMapper.getCommentDto(commentAddDto, UserMapper.getUser(userDto), item))));
     }
 
     private void existsById(Long userId) {
-        if (!userRepository.existsById(userId)) {
+        if (!userService.isUserExists(userId)) {
             throw new EntityNotFoundException("Проверьте ID = " + userId + " пользователя");
         }
     }

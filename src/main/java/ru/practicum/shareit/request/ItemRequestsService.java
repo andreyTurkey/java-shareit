@@ -34,13 +34,13 @@ public class ItemRequestsService {
     final EntityManager em;
 
     public ItemRequestDto addRequest(ItemRequestDto itemRequestDto) {
-        userService.userExists(itemRequestDto.getUserId());
+        userService.isUserExists(itemRequestDto.getUserId());
 
         return ItemRequestMapper.getItemRequestDto(itemRequestsRepository.save(ItemRequestMapper.getItemRequest(itemRequestDto)));
     }
 
     public List<ItemRequestPublicDto> getAllRequestByUserId(Long userId) {
-        userService.userExists(userId);
+        userService.isUserExists(userId);
 
         Set<ItemRequestPublicDto> requests = new HashSet<>();
 
@@ -122,7 +122,7 @@ public class ItemRequestsService {
     }
 
     public ItemRequestPublicDto getRequestById(Long requestId, Long userId) {
-        userService.userExists(userId);
+        userService.isUserExists(userId);
 
         requestExist(requestId);
 
@@ -158,7 +158,7 @@ public class ItemRequestsService {
     }
 
     public List<ItemRequestPublicDto> getAllRequestByPageable(Integer from, Integer size, Long userId) {
-        userService.userExists(userId);
+        userService.isUserExists(userId);
 
         if (from == null && size == null) {
             return buildingRequests(null, userId);

@@ -2,6 +2,7 @@ package ru.practicum.shareit;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,9 +33,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @Slf4j
 @Transactional
-@SpringBootTest(
-        properties = "db.name=test",
-        webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemServiceTest {
 
@@ -46,21 +45,27 @@ public class ItemServiceTest {
 
     private final BookingRepository bookingRepository;
 
-    @Test
-    void saveItemAndComment() {
-        UserDto userDto = new UserDto();
+    private UserDto userDto;
+    private UserDto ownerDto;
+
+    @BeforeEach
+    void createUser() {
+        userDto = new UserDto();
         userDto.setName("User Test2");
         userDto.setEmail("some2@email.com");
 
         userService.addUser(userDto);
 
-        UserDto ownerDto = new UserDto();
+        ownerDto = new UserDto();
         ownerDto.setName("Owner Test2");
         ownerDto.setEmail("owner2@email.com");
 
         userService.addUser(ownerDto);
+    }
 
-       TypedQuery<User> queryUser1 = em.createQuery("Select u from User u where u.email = :email", User.class);
+    @Test
+    void saveItemAndComment() {
+        TypedQuery<User> queryUser1 = em.createQuery("Select u from User u where u.email = :email", User.class);
         User user = queryUser1
                 .setParameter("email", userDto.getEmail())
                 .getSingleResult();
@@ -71,6 +76,9 @@ public class ItemServiceTest {
                 .setParameter("email", ownerDto.getEmail())
                 .getSingleResult();
         log.error(user1 + " - полученный юзер2");
+
+        userService.isUserExists(1L);
+        userService.isUserExists(2L);
 
         ItemDto itemDto = new ItemDto();
         itemDto.setId(1L);

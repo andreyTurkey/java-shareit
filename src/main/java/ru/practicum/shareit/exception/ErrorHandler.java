@@ -23,7 +23,14 @@ public class ErrorHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemNotFoundException(final EntityNotFoundException e) {
+    public ErrorResponse handleEntityNotFoundException(final EntityNotFoundException e) {
+        log.error(e.getMessage() + " - объект не найден");
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
         log.error(e.getMessage() + " - объект не найден");
         return new ErrorResponse(e.getMessage());
     }
