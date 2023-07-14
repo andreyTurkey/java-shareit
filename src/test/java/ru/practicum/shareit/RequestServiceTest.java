@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestsService;
@@ -15,6 +15,7 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 import java.time.LocalDateTime;
@@ -38,19 +39,17 @@ public class RequestServiceTest {
     final ItemRequestsService itemRequestsService;
 
     @Test
-    @Rollback(false)
     void saveRequest() {
         UserDto userDto = new UserDto();
-        userDto.setName("Owner Test1");
-        userDto.setEmail("some@email.com");
+        userDto.setName("Owner Test3");
+        userDto.setEmail("some3@email.com");
 
         userService.addUser(userDto);
 
-        ItemRequestDto itemRequestDto = ItemRequestDto.builder()
-                .userId(1L)
-                .created(LocalDateTime.now())
-                .description("Request for text")
-                .build();
+        ItemRequestDto itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setUserId(1L);
+        itemRequestDto.setCreated(LocalDateTime.now());
+        itemRequestDto.setDescription("Request for text");
 
         itemRequestsService.addRequest(itemRequestDto);
 

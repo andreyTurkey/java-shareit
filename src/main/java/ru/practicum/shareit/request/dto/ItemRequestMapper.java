@@ -7,12 +7,20 @@ import java.util.ArrayList;
 public class ItemRequestMapper {
 
     public static ItemRequestDto getItemRequestDto(ItemRequest itemRequest) {
-        return new ItemRequestDto.ItemRequestDtoBuilder()
+       /* return new ItemRequestDto.ItemRequestDtoBuilder()
                 .id(itemRequest.getId())
                 .created(itemRequest.getCreated())
                 .description(itemRequest.getDescription())
                 .userId(itemRequest.getUserId())
-                .build();
+                .build();*/
+
+        ItemRequestDto itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setId(itemRequest.getId());
+        itemRequestDto.setCreated(itemRequest.getCreated());
+        itemRequestDto.setDescription(itemRequest.getDescription());
+        itemRequestDto.setUserId(itemRequest.getUserId());
+
+        return itemRequestDto;
     }
 
     public static ItemRequest getItemRequest(ItemRequestDto itemRequestDto) {
@@ -26,11 +34,19 @@ public class ItemRequestMapper {
     }
 
     public static ItemRequestPublicDto getItemRequestPublicDto(ItemRequest itemRequest) {
-       return ItemRequestPublicDto.builder()
+       /*return ItemRequestPublicDto.builder()
                 .id(itemRequest.getId())
                 .description(itemRequest.getDescription())
                 .created(itemRequest.getCreated())
                 .items(new ArrayList<>())
-                .build();
+                .build();*/
+
+        ItemRequestPublicDto itemRequestPublicDto = new ItemRequestPublicDto();
+        itemRequestPublicDto.setId(itemRequest.getId());
+        itemRequestPublicDto.setDescription(itemRequest.getDescription());
+        itemRequestPublicDto.setCreated(itemRequest.getCreated());
+        itemRequestPublicDto.setItems(new ArrayList<>());
+
+        return itemRequestPublicDto;
     }
 }

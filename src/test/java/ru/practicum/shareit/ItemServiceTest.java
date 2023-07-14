@@ -1,10 +1,10 @@
 package ru.practicum.shareit;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingState;
@@ -30,6 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
+@Slf4j
 @Transactional
 @SpringBootTest(
         properties = "db.name=test",
@@ -46,24 +47,30 @@ public class ItemServiceTest {
     private final BookingRepository bookingRepository;
 
     @Test
-    @Rollback(false)
     void saveItemAndComment() {
         UserDto userDto = new UserDto();
-        userDto.setName("User Test1");
-        userDto.setEmail("some@email.com");
+        userDto.setName("User Test2");
+        userDto.setEmail("some2@email.com");
 
         userService.addUser(userDto);
 
         UserDto ownerDto = new UserDto();
-        ownerDto.setName("Owner Test1");
-        ownerDto.setEmail("owner@email.com");
+        ownerDto.setName("Owner Test2");
+        ownerDto.setEmail("owner2@email.com");
 
         userService.addUser(ownerDto);
 
-        TypedQuery<User> queryUser = em.createQuery("Select u from User u where u.email = :email", User.class);
-        User user = queryUser // ID = 1
+       TypedQuery<User> queryUser1 = em.createQuery("Select u from User u where u.email = :email", User.class);
+        User user = queryUser1
                 .setParameter("email", userDto.getEmail())
                 .getSingleResult();
+        log.error(user + " - полученный юзер1");
+
+        TypedQuery<User> queryUser2 = em.createQuery("Select u from User u where u.email = :email", User.class);
+        User user1 = queryUser2
+                .setParameter("email", ownerDto.getEmail())
+                .getSingleResult();
+        log.error(user1 + " - полученный юзер2");
 
         ItemDto itemDto = new ItemDto();
         itemDto.setId(1L);
@@ -71,7 +78,9 @@ public class ItemServiceTest {
         itemDto.setDescription("For Test");
         itemDto.setRequestId(0L);
         itemDto.setAvailable(true);
-        itemDto.setOwner(2L);
+        itemDto.setOwner(1L);
+
+        log.error(itemDto + " - полученная вещь");
 
         service.addItem(itemDto);
 
@@ -80,9 +89,12 @@ public class ItemServiceTest {
                 .setParameter("name", itemDto.getName())
                 .getSingleResult();
 
+        log.error(item + " - полученная вещь from DB");
+
         assertThat(item.getId(), notNullValue());
         assertThat(item.getName(), equalTo(itemDto.getName()));
         assertThat(item.getDescription(), equalTo(itemDto.getDescription()));
+        assertThat(item.getOwner(), equalTo(itemDto.getOwner()));
 
         BookingAddDto bookingAddDto = new BookingAddDto();
         bookingAddDto.setItemId(1L);

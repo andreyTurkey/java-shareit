@@ -10,10 +10,10 @@ import java.time.LocalDateTime;
  * TODO Sprint add-item-requests.
  */
 
-@Builder
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemRequestDto {
 

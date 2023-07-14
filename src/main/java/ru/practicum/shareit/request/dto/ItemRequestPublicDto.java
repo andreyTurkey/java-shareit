@@ -7,10 +7,10 @@ import ru.practicum.shareit.item.dto.ItemPublicDto;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemRequestPublicDto {
 

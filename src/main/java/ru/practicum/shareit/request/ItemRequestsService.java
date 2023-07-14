@@ -46,15 +46,16 @@ public class ItemRequestsService {
 
         Set<ItemPublicDto> items = new HashSet<>();
 
-        List<ItemRequestJoinAnswer> requestJoinAnswers = getAllRequestByUserIdJoinAnswer(userId); // получен JOIN
+        List<ItemRequestJoinAnswer> requestJoinAnswers = getAllRequestByUserIdJoinAnswer(userId);
 
-        for (ItemRequestJoinAnswer requestJoinAnswer : requestJoinAnswers) { // Собраны REQUEST-ы
-            ItemRequestPublicDto itemRequestPublicDto = ItemRequestPublicDto.builder()
-                    .id(requestJoinAnswer.getId())
-                    .description(requestJoinAnswer.getDescription())
-                    .created(requestJoinAnswer.getCreated())
-                    .items(new ArrayList<>())
-                    .build();
+        for (ItemRequestJoinAnswer requestJoinAnswer : requestJoinAnswers) {
+
+            ItemRequestPublicDto itemRequestPublicDto = new ItemRequestPublicDto();
+            itemRequestPublicDto.setId(requestJoinAnswer.getId());
+            itemRequestPublicDto.setDescription(requestJoinAnswer.getDescription());
+            itemRequestPublicDto.setCreated(requestJoinAnswer.getCreated());
+            itemRequestPublicDto.setItems(new ArrayList<>());
+
             requests.add(itemRequestPublicDto);
         }
 
@@ -66,7 +67,7 @@ public class ItemRequestsService {
             }
         }
 
-        for (ItemRequestPublicDto requestPublicDto : requests) { // сборка REQUEST - ов
+        for (ItemRequestPublicDto requestPublicDto : requests) {
             for (ItemPublicDto item : items) {
                 if (requestPublicDto.getId().equals(item.getRequestId())) {
                     requestPublicDto.getItems().add(item);
@@ -138,12 +139,11 @@ public class ItemRequestsService {
             itemRequestJoinAnswer = requestJoinAnswers.get();
         }
 
-        ItemRequestPublicDto itemRequestPublicDto = ItemRequestPublicDto.builder()
-                .id(itemRequestJoinAnswer.getId())
-                .description(itemRequestJoinAnswer.getDescription())
-                .created(itemRequestJoinAnswer.getCreated())
-                .items(new ArrayList<>())
-                .build();
+        ItemRequestPublicDto itemRequestPublicDto = new ItemRequestPublicDto();
+        itemRequestPublicDto.setId(itemRequestJoinAnswer.getId());
+        itemRequestPublicDto.setDescription(itemRequestJoinAnswer.getDescription());
+        itemRequestPublicDto.setCreated(itemRequestJoinAnswer.getCreated());
+        itemRequestPublicDto.setItems(new ArrayList<>());
 
         for (ItemRequestJoinAnswer requestJoinAnswer : requestJoinAnswersForAnswer) {
             if (requestJoinAnswer.getItemId() == null) {

@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingAddDto;
@@ -42,17 +41,16 @@ public class BookingServiceTest {
     final UserService userService;
 
     @Test
-    @Rollback(false)
     void saveBooking() {
         UserDto userDto = new UserDto();
         userDto.setName("Owner Test1");
-        userDto.setEmail("some@email.com");
+        userDto.setEmail("owner@email.com");
 
         userService.addUser(userDto);
 
         UserDto ownerDto = new UserDto();
         ownerDto.setName("User Test1");
-        ownerDto.setEmail("owner@email.com");
+        ownerDto.setEmail("user@email.com");
 
         userService.addUser(ownerDto);
 

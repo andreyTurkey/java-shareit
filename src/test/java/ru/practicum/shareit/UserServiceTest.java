@@ -28,7 +28,6 @@ public class UserServiceTest {
     private final UserService service;
 
     @Test
-    @Rollback(false)
     void saveUser() {
         UserDto userDto = new UserDto();
         userDto.setName("User Test1");
