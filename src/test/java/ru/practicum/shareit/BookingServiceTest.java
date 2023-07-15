@@ -64,7 +64,7 @@ public class BookingServiceTest {
 
         BookingAddDto bookingAddDto = new BookingAddDto();
         bookingAddDto.setItemId(1L);
-        bookingAddDto.setUserId(1L);
+        bookingAddDto.setUserId(1L); // Был 1 - стал 2
         bookingAddDto.setStart(LocalDateTime.now().plusMinutes(10));
         bookingAddDto.setEnd(LocalDateTime.now().plusHours(1));
 
