@@ -14,11 +14,9 @@ import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
-import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -35,7 +33,6 @@ public class BookingServiceImpl implements BookingService {
 
     ItemService itemService;
 
-    //UserRepository userRepository;
     UserService userService;
 
     EntityManager em;
@@ -75,7 +72,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto addBooking(BookingAddDto bookingAddDto) {
-        //User user = userRepository.getReferenceById(bookingAddDto.getUserId());
         UserDto userDto = userService.getUserById(bookingAddDto.getUserId());
         ItemDto itemDto = itemService.getItemById(bookingAddDto.getItemId());
         BookingDto bookingDto = BookingAddMapper.getBookingDto(bookingAddDto, itemDto, UserMapper.getUser(userDto));
@@ -296,14 +292,12 @@ public class BookingServiceImpl implements BookingService {
         if (!itemService.existsByItemId(bookingDto.getItem().getId())) {
             throw new EntityNotFoundException("Вещь " + bookingDto.getItem().getName() + " не найдена.");
         }
-        //if (!userRepository.existsById(bookingDto.getBooker().getId())) {
         if (!userService.isUserExists(bookingDto.getBooker().getId())) {
             throw new EntityNotFoundException("Проверьте ID = " + bookingDto.getBooker().getId() + " пользователя");
         }
     }
 
     private void userExistsById(Long userId) {
-        //if (!userRepository.existsById(userId)) {
         if (!userService.isUserExists(userId)) {
             throw new EntityNotFoundException("Проверьте ID = " + userId + " пользователя");
         }

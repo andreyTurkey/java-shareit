@@ -106,13 +106,13 @@ public class UserServiceUnitTest {
         user.setEmail("mail@mail.ru");
 
         Mockito
-                .when(mockUserRepository.existsById(Mockito.anyLong())).
-                thenThrow(new EntityNotFoundException("Пользователь ID = " + user.getId() + " не найден."));
+                .when(mockUserRepository.findByEmail(Mockito.anyString())).
+                thenThrow(new EntityNotFoundException("Пользователь ID = " + user.getEmail() + " не найден."));
 
         final EntityNotFoundException exception = Assertions.assertThrows(
                 EntityNotFoundException.class,
-                () -> userService.isUserExists(2L));
+                () -> userService.isUserExistsByEmail(user.getEmail()));
 
-        Assertions.assertEquals("Пользователь ID = " + user.getId() + " не найден.", exception.getMessage());
+        Assertions.assertEquals("Пользователь ID = " + user.getEmail() + " не найден.", exception.getMessage());
     }
 }

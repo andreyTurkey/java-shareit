@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingState;
@@ -64,21 +65,20 @@ public class ItemServiceTest {
     }
 
     @Test
+    //@Rollback(value = false)
     void saveItemAndComment() {
         TypedQuery<User> queryUser1 = em.createQuery("Select u from User u where u.email = :email", User.class);
         User user = queryUser1
                 .setParameter("email", userDto.getEmail())
                 .getSingleResult();
-        log.error(user + " - полученный юзер1");
 
         TypedQuery<User> queryUser2 = em.createQuery("Select u from User u where u.email = :email", User.class);
         User user1 = queryUser2
                 .setParameter("email", ownerDto.getEmail())
                 .getSingleResult();
-        log.error(user1 + " - полученный юзер2");
 
-        userService.isUserExists(1L);
-        userService.isUserExists(2L);
+        assertThat(user.getName(), equalTo(userDto.getName()));
+        assertThat(user1.getName(), equalTo(ownerDto.getName()));
 
         ItemDto itemDto = new ItemDto();
         itemDto.setId(1L);
@@ -86,7 +86,7 @@ public class ItemServiceTest {
         itemDto.setDescription("For Test");
         itemDto.setRequestId(0L);
         itemDto.setAvailable(true);
-        itemDto.setOwner(1L);
+        itemDto.setOwner(3L);
 
         log.error(itemDto + " - полученная вещь");
 
@@ -116,10 +116,12 @@ public class ItemServiceTest {
         bookingRepository.save(BookingMapper.getBooking(bookingDto));
 
         CommentAddDto commentAddDto = new CommentAddDto();
-        commentAddDto.setItemId(1L);
-        commentAddDto.setUserId(1L);
+        commentAddDto.setItemId(2L);
+        commentAddDto.setUserId(3L);
         commentAddDto.setText("Comment for test");
         commentAddDto.setCreated(LocalDateTime.now());
+
+        log.error(userService.getAllUsers() + " - ВСЕ ЮЗЕРЫ");
 
         service.addComment(commentAddDto);
 

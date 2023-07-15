@@ -5,7 +5,6 @@ import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
@@ -29,14 +28,5 @@ public class ItemDto {
     Boolean available;
 
     Long requestId;
-/*
-    public ItemDto(Long id, String name, String description, Long owner, Boolean available, Long requestId) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.owner = owner;
-        this.available = available;
-        this.requestId = requestId;
-    }*/
 }
 
