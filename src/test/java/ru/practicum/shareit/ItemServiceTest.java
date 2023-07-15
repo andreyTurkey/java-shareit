@@ -118,7 +118,8 @@ public class ItemServiceTest {
         bookingRepository.save(BookingMapper.getBooking(bookingDto));
 
         CommentAddDto commentAddDto = new CommentAddDto();
-        commentAddDto.setItemId(2L);
+        //commentAddDto.setItemId(2L);
+        commentAddDto.setItemId(item.getId());
         //commentAddDto.setUserId(1L); // Был 3 - стал 2// Был 2- стал 1
         commentAddDto.setUserId(user.getId());
         commentAddDto.setText("Comment for test");
