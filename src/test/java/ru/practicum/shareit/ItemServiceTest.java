@@ -73,12 +73,12 @@ public class ItemServiceTest {
                 .getSingleResult();
 
         TypedQuery<User> queryUser2 = em.createQuery("Select u from User u where u.email = :email", User.class);
-        User user1 = queryUser2
+        User owner = queryUser2
                 .setParameter("email", ownerDto.getEmail())
                 .getSingleResult();
 
         assertThat(user.getName(), equalTo(userDto.getName()));
-        assertThat(user1.getName(), equalTo(ownerDto.getName()));
+        assertThat(owner.getName(), equalTo(ownerDto.getName()));
 
         ItemDto itemDto = new ItemDto();
         itemDto.setId(1L);
@@ -86,7 +86,8 @@ public class ItemServiceTest {
         itemDto.setDescription("For Test");
         itemDto.setRequestId(0L);
         itemDto.setAvailable(true);
-        itemDto.setOwner(2L); // править
+        //itemDto.setOwner(2L); // править
+        itemDto.setOwner(owner.getId());
 
         log.error(itemDto + " - полученная вещь");
 
@@ -106,7 +107,8 @@ public class ItemServiceTest {
 
         BookingAddDto bookingAddDto = new BookingAddDto();
         bookingAddDto.setItemId(1L);
-        bookingAddDto.setUserId(1L);
+        //bookingAddDto.setUserId(1L);
+        bookingAddDto.setUserId(user.getId());
         bookingAddDto.setStatus(BookingState.APPROVED);
         bookingAddDto.setStart(LocalDateTime.now().minusHours(2));
         bookingAddDto.setEnd(LocalDateTime.now().minusHours(1));
@@ -117,7 +119,8 @@ public class ItemServiceTest {
 
         CommentAddDto commentAddDto = new CommentAddDto();
         commentAddDto.setItemId(2L);
-        commentAddDto.setUserId(1L); // Был 3 - стал 2// Был 2- стал 1
+        //commentAddDto.setUserId(1L); // Был 3 - стал 2// Был 2- стал 1
+        commentAddDto.setUserId(user.getId());
         commentAddDto.setText("Comment for test");
         commentAddDto.setCreated(LocalDateTime.now());
 
