@@ -86,7 +86,7 @@ public class ItemServiceTest {
         itemDto.setDescription("For Test");
         itemDto.setRequestId(0L);
         itemDto.setAvailable(true);
-        itemDto.setOwner(3L);
+        itemDto.setOwner(2L); // править
 
         log.error(itemDto + " - полученная вещь");
 
