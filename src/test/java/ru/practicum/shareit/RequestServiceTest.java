@@ -45,7 +45,7 @@ public class RequestServiceTest {
         userService.addUser(userDto);
 
         ItemRequestDto itemRequestDto = new ItemRequestDto();
-        itemRequestDto.setUserId(2L); // Был 1 - стал 2
+        itemRequestDto.setUserId(3L); // Был 1 - стал 2 // Был 2 - стал 3
         itemRequestDto.setCreated(LocalDateTime.now());
         itemRequestDto.setDescription("Request for text");
 

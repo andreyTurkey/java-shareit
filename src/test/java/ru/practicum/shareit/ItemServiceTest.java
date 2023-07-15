@@ -117,7 +117,7 @@ public class ItemServiceTest {
 
         CommentAddDto commentAddDto = new CommentAddDto();
         commentAddDto.setItemId(2L);
-        commentAddDto.setUserId(2L); // Был 3 - стал 2
+        commentAddDto.setUserId(1L); // Был 3 - стал 2// Был 2- стал 1
         commentAddDto.setText("Comment for test");
         commentAddDto.setCreated(LocalDateTime.now());
 
