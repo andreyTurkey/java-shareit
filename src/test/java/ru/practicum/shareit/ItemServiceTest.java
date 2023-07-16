@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingState;
@@ -65,7 +64,6 @@ public class ItemServiceTest {
     }
 
     @Test
-    //@Rollback(value = false)
     void saveItemAndComment() {
         TypedQuery<User> queryUser1 = em.createQuery("Select u from User u where u.email = :email", User.class);
         User user = queryUser1
@@ -86,10 +84,7 @@ public class ItemServiceTest {
         itemDto.setDescription("For Test");
         itemDto.setRequestId(0L);
         itemDto.setAvailable(true);
-        //itemDto.setOwner(2L); // править
         itemDto.setOwner(owner.getId());
-
-        log.error(itemDto + " - полученная вещь");
 
         service.addItem(itemDto);
 
@@ -98,8 +93,6 @@ public class ItemServiceTest {
                 .setParameter("name", itemDto.getName())
                 .getSingleResult();
 
-        log.error(item + " - полученная вещь from DB");
-
         assertThat(item.getId(), notNullValue());
         assertThat(item.getName(), equalTo(itemDto.getName()));
         assertThat(item.getDescription(), equalTo(itemDto.getDescription()));
@@ -107,7 +100,6 @@ public class ItemServiceTest {
 
         BookingAddDto bookingAddDto = new BookingAddDto();
         bookingAddDto.setItemId(1L);
-        //bookingAddDto.setUserId(1L);
         bookingAddDto.setUserId(user.getId());
         bookingAddDto.setStatus(BookingState.APPROVED);
         bookingAddDto.setStart(LocalDateTime.now().minusHours(2));
@@ -118,9 +110,7 @@ public class ItemServiceTest {
         bookingRepository.save(BookingMapper.getBooking(bookingDto));
 
         CommentAddDto commentAddDto = new CommentAddDto();
-        //commentAddDto.setItemId(2L);
         commentAddDto.setItemId(item.getId());
-        //commentAddDto.setUserId(1L); // Был 3 - стал 2// Был 2- стал 1
         commentAddDto.setUserId(user.getId());
         commentAddDto.setText("Comment for test");
         commentAddDto.setCreated(LocalDateTime.now());

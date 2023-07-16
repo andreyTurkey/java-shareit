@@ -115,10 +115,11 @@ public class ItemRequestsService {
         return requests;
     }
 
-    public void requestExist(Long requestId) {
+    public boolean requestExist(Long requestId) {
         if (!itemRequestsRepository.existsById(requestId)) {
             throw new EntityNotFoundException("Запрос не найден");
         }
+        return true;
     }
 
     public ItemRequestPublicDto getRequestById(Long requestId, Long userId) {
