@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.BookingAddDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingGetOwnerDto;
+import ru.practicum.shareit.booking.dto.BookingMapperGetOwnerDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.item.ItemService;
@@ -368,5 +370,30 @@ public class BookingServiceTest {
         } catch (NotAvailableException thrown) {
             assertThat(thrown.getMessage(), equalTo("Unknown state: UNSUPPORTED_STATUS"));
         }
+    }
+
+    @Test
+    void getBookingGetOwnerDto() {
+        TypedQuery<Item> queryItem = em.createQuery("Select i from Item i where i.name = :name", Item.class);
+        item = queryItem
+                .setParameter("name", itemDto.getName())
+                .getSingleResult();
+
+        BookingAddDto bookingAddDto = new BookingAddDto();
+        bookingAddDto.setItemId(item.getId());
+        bookingAddDto.setUserId(user.getId());
+        bookingAddDto.setStart(LocalDateTime.now().plusMinutes(10));
+        bookingAddDto.setEnd(LocalDateTime.now().plusHours(1));
+
+        bookingService.addBooking(bookingAddDto);
+
+        TypedQuery<Booking> query = em.createQuery("Select b from Booking b where b.start = :start", Booking.class);
+        Booking booking = query
+                .setParameter("start", bookingAddDto.getStart())
+                .getSingleResult();
+
+        BookingGetOwnerDto bookingGetOwnerDto = BookingMapperGetOwnerDto.getBookingGetOwnerDto(booking);
+        assertThat(bookingGetOwnerDto.getId(), equalTo(booking.getId()));
+
     }
 }

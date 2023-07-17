@@ -126,4 +126,6 @@ public class ItemServiceTest {
         assertThat(comment.getItem(), equalTo(item));
         assertThat(comment.getUser(), equalTo(user));
     }
+
+
 }
