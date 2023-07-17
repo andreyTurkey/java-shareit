@@ -191,9 +191,9 @@ public class BookingServiceTest {
 
         bookingService.updateStatus(owner.getId(), booking.getId(), true);
 
-        TypedQuery<Booking> queryStatus = em.createQuery("Select b from Booking b where b.id = :id", Booking.class);
+        TypedQuery<Booking> queryStatus = em.createQuery("Select b from Booking b where b.start = :start", Booking.class);
         Booking bookingNewStatus = queryStatus
-                .setParameter("id", 1L)
+                .setParameter("start", bookingAddDto.getStart())
                 .getSingleResult();
 
         assertThat(booking.getStatus(), equalTo(bookingNewStatus.getStatus()));

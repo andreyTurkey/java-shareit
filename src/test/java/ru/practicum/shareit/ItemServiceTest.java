@@ -128,9 +128,9 @@ public class ItemServiceTest {
 
         service.addComment(commentAddDto);
 
-        TypedQuery<Comment> queryComment = em.createQuery("Select i from Comment i where i.id = :id", Comment.class);
+        TypedQuery<Comment> queryComment = em.createQuery("Select i from Comment i where i.text = :text", Comment.class);
         Comment comment = queryComment
-                .setParameter("id", 1L)
+                .setParameter("text", commentAddDto.getText())
                 .getSingleResult();
 
         assertThat(comment.getId(), notNullValue());
