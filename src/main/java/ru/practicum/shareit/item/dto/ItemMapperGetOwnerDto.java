@@ -22,7 +22,6 @@ public class ItemMapperGetOwnerDto {
             itemPublicDto.setNextBooking(lastAndNextBookings.get(1));
 
             return itemPublicDto;
-
         } else {
             ItemPublicDto itemPublicDto = new ItemPublicDto();
             itemPublicDto.setId(item.getId());

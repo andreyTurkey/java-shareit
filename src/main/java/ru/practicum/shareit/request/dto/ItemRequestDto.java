@@ -6,10 +6,6 @@ import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-item-requests.
- */
-
 @Getter
 @Setter
 @EqualsAndHashCode

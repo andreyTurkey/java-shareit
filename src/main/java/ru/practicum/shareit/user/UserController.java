@@ -9,9 +9,6 @@ import ru.practicum.shareit.user.dto.UserUpdateDto;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor

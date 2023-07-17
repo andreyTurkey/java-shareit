@@ -2,7 +2,6 @@ package ru.practicum.shareit.request.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.item.dto.ItemPublicDto;
 
 @Builder
 @Getter
@@ -20,9 +19,6 @@ public class ItemAnswerPublicDto {
     Boolean itemAvailable;
 
     Long itemRequestId;
-
-    //список ответов в формате: id вещи, название,
-    // её описание description, а также requestId запроса и признак доступности вещи available.
 }
 
 

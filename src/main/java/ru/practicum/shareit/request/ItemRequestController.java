@@ -12,10 +12,6 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * TODO Sprint add-item-requests.
- */
-
 @Slf4j
 @AllArgsConstructor
 @RestController

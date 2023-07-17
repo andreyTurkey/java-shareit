@@ -153,7 +153,7 @@ public class ItemServiceTest {
 
     @Test
     void updateItem() {
-        ItemUpdateDto itemUpdateDto =  new ItemUpdateDto();
+        ItemUpdateDto itemUpdateDto = new ItemUpdateDto();
         itemUpdateDto.setDescription("Updated Item");
 
 
@@ -171,7 +171,7 @@ public class ItemServiceTest {
     }
 
     @Test
-    void getAllBookingByOwnerId( ){
+    void getAllBookingByOwnerId() {
         BookingAddDto bookingAddDto = new BookingAddDto();
         bookingAddDto.setItemId(item.getId());
         bookingAddDto.setUserId(user.getId());

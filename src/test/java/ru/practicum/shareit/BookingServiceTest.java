@@ -25,7 +25,6 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.TypedQuery;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -394,6 +393,5 @@ public class BookingServiceTest {
 
         BookingGetOwnerDto bookingGetOwnerDto = BookingMapperGetOwnerDto.getBookingGetOwnerDto(booking);
         assertThat(bookingGetOwnerDto.getId(), equalTo(booking.getId()));
-
     }
 }

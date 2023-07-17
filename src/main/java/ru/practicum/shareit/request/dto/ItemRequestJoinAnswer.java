@@ -10,19 +10,19 @@ import java.time.LocalDateTime;
 @Builder
 public class ItemRequestJoinAnswer {
 
-    Long id; //есть
+    Long id;
 
-    String description; // есть
+    String description;
 
     Long userId;
 
-    LocalDateTime created; // есть
+    LocalDateTime created;
 
-    Long itemId; //есть
+    Long itemId;
 
-    String itemName; //есть
+    String itemName;
 
-    String itemDescription; //есть
+    String itemDescription;
 
-    Boolean itemAvailable; //есть
+    Boolean itemAvailable;
 }

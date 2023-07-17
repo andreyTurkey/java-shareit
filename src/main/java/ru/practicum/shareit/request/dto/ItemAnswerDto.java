@@ -15,7 +15,4 @@ public class ItemAnswerDto {
     Long itemId;
 
     Long itemRequestId;
-
-    //список ответов в формате: id вещи, название,
-    // её описание description, а также requestId запроса и признак доступности вещи available.
 }

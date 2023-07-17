@@ -94,7 +94,7 @@ public class ItemServiceUnitTest {
         updatedItemAvailable.setOwner(1L);
 
         ItemUpdateDto itemUpdateDtoName = new ItemUpdateDto();
-               itemUpdateDtoName.setName("ItemUpdate");
+        itemUpdateDtoName.setName("ItemUpdate");
 
         Mockito
                 .when(mockItemRepository.getReferenceById(Mockito.anyLong())).
@@ -108,13 +108,13 @@ public class ItemServiceUnitTest {
                 itemUpdateDtoName, 1L, 1L));
 
         ItemUpdateDto itemUpdateDtoDescription = new ItemUpdateDto();
-                itemUpdateDtoDescription.setDescription("Updated Description");
+        itemUpdateDtoDescription.setDescription("Updated Description");
 
         Assertions.assertEquals(ItemMapper.getItemDto(updatedItemDescription), itemService.updateItem(
                 itemUpdateDtoDescription, 1L, 1L));
 
-        ItemUpdateDto itemUpdateDtoAvailable = new  ItemUpdateDto();
-                itemUpdateDtoAvailable.setAvailable(false);
+        ItemUpdateDto itemUpdateDtoAvailable = new ItemUpdateDto();
+        itemUpdateDtoAvailable.setAvailable(false);
 
         Assertions.assertEquals(ItemMapper.getItemDto(updatedItemAvailable), itemService.updateItem(
                 itemUpdateDtoAvailable, 1L, 1L));

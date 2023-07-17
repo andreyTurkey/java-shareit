@@ -7,10 +7,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-item-requests.
- */
-
 @Entity
 @Table(name = "requests", schema = "public")
 @RequiredArgsConstructor

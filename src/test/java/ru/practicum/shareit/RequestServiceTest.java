@@ -156,16 +156,16 @@ public class RequestServiceTest {
 
         itemService.addItem(itemDto1);
 
-        List<ItemRequestPublicDto> getAllRequestByUserId =  itemRequestsService.getAllRequestByUserId(user.getId());
+        List<ItemRequestPublicDto> getAllRequestByUserId = itemRequestsService.getAllRequestByUserId(user.getId());
 
-        assertThat (getAllRequestByUserId.size(), equalTo(1));
+        assertThat(getAllRequestByUserId.size(), equalTo(1));
         assertThat(itemRequest.getId(), equalTo(getAllRequestByUserId.get(0).getId()));
         assertThat(true, equalTo(itemRequestsService.requestExist(itemRequest.getId())));
 
         try {
             itemRequestsService.requestExist(5L);
         } catch (EntityNotFoundException thrown) {
-            assertThat (thrown.getMessage(), equalTo("Запрос не найден"));
+            assertThat(thrown.getMessage(), equalTo("Запрос не найден"));
         }
     }
 
@@ -191,7 +191,7 @@ public class RequestServiceTest {
 
         ItemRequestPublicDto itemRequestPublicDto = itemRequestsService.getRequestById(itemRequest.getId(), user.getId());
 
-        assertThat (itemRequestDto.getDescription(), equalTo(itemRequestPublicDto.getDescription()));
+        assertThat(itemRequestDto.getDescription(), equalTo(itemRequestPublicDto.getDescription()));
     }
 
     @Test
@@ -228,21 +228,21 @@ public class RequestServiceTest {
 
         itemService.addItem(itemDto);
 
-       List<ItemRequestPublicDto> getAllRequestByPageable
-                =  itemRequestsService.getAllRequestByPageable(0, 20, user2.getId());
+        List<ItemRequestPublicDto> getAllRequestByPageable
+                = itemRequestsService.getAllRequestByPageable(0, 20, user2.getId());
 
-        assertThat (getAllRequestByPageable.size(), equalTo(1));
+        assertThat(getAllRequestByPageable.size(), equalTo(1));
 
         List<ItemRequestPublicDto> getAllRequestByPageablePageNull
-                =  itemRequestsService.getAllRequestByPageable(null, null, user2.getId());
+                = itemRequestsService.getAllRequestByPageable(null, null, user2.getId());
 
-        assertThat (getAllRequestByPageablePageNull.size(), equalTo(1));
+        assertThat(getAllRequestByPageablePageNull.size(), equalTo(1));
 
         try {
             List<ItemRequestPublicDto> getAllRequestByPageablePageFail
-                    =  itemRequestsService.getAllRequestByPageable(-1, -1, user2.getId());
+                    = itemRequestsService.getAllRequestByPageable(-1, -1, user2.getId());
         } catch (NotAvailableException thrown) {
-            assertThat (thrown.getMessage(), equalTo("Проверьте параметры запроса"));
+            assertThat(thrown.getMessage(), equalTo("Проверьте параметры запроса"));
         }
     }
 }
