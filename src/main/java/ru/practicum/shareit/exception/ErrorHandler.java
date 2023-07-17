@@ -28,20 +28,6 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
-        log.error(e.getMessage() + " - объект не найден");
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateEmailException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleDuplicateEmailException(final DuplicateEmailException e) {
-        log.error(e.getMessage() + " - ошибка валидации EMAIL");
-        return new ErrorResponse(e.getMessage());
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleThereIsNoSuchUserException(MethodArgumentNotValidException ex) {
         log.error(ex.getMessage() + " - ошибка валидации");
