@@ -3,7 +3,6 @@ package ru.practicum.shareit;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +24,12 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-@Slf4j
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -63,6 +59,8 @@ public class ItemServiceTest {
     ItemDto itemDto;
 
     Long itemFailId = 10L;
+
+    Long userFailId = 20L;
 
     @BeforeEach
     void createUser() {
@@ -192,5 +190,12 @@ public class ItemServiceTest {
         List<ItemPublicDto> items = service.findAllByUser(owner.getId());
 
         assertThat(items.size(), equalTo(1));
+    }
+
+    @Test
+    void getItemByParam() {
+        List<ItemDto> itemByParam = service.getItemByParam("For Test");
+
+        assertThat(itemByParam.size(), equalTo(1));
     }
 }
