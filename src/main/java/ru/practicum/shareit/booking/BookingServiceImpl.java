@@ -71,7 +71,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingDto addBooking(BookingAddDto bookingAddDto) {
+    public BookingDto addBooking(BookingAddDto bookingAddDto)  {
         UserDto userDto = userService.getUserById(bookingAddDto.getUserId());
         ItemDto itemDto = itemService.getItemById(bookingAddDto.getItemId());
         BookingDto bookingDto = BookingAddMapper.getBookingDto(bookingAddDto, itemDto, UserMapper.getUser(userDto));

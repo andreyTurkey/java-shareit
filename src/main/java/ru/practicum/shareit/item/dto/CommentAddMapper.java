@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
@@ -9,15 +10,6 @@ import ru.practicum.shareit.user.model.User;
 public class CommentAddMapper {
 
     public static CommentDto getCommentDto(CommentAddDto commentAddDto, User user, Item item) {
-
-       /* return new CommentDto.CommentDtoBuilder()
-                .id(commentAddDto.getId())
-                .item(item)
-                .user(user)
-                .authorName(user.getName())
-                .text(commentAddDto.getText())
-                .created(commentAddDto.getCreated())
-                .build();*/
 
         CommentDto commentDto = new CommentDto();
         commentDto.setId(commentAddDto.getId());
@@ -28,5 +20,17 @@ public class CommentAddMapper {
         commentDto.setCreated(commentAddDto.getCreated());
 
         return commentDto;
+    }
+
+    public static CommentAddDto getCommentAddDto(Comment comment) {
+
+        CommentAddDto commentAddDto = new CommentAddDto();
+        commentAddDto.setId(comment.getId());
+        commentAddDto.setItemId(comment.getItem().getId());
+        commentAddDto.setUserId(comment.getUser().getId());
+        commentAddDto.setText(comment.getText());
+        commentAddDto.setCreated(comment.getCreated());
+
+        return commentAddDto;
     }
 }

@@ -115,8 +115,6 @@ public class ItemServiceTest {
         commentAddDto.setText("Comment for test");
         commentAddDto.setCreated(LocalDateTime.now());
 
-        log.error(userService.getAllUsers() + " - ВСЕ ЮЗЕРЫ");
-
         service.addComment(commentAddDto);
 
         TypedQuery<Comment> queryComment = em.createQuery("Select i from Comment i where i.id = :id", Comment.class);

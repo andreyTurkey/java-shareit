@@ -7,7 +7,6 @@ import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.item.dto.CommentAddDto;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
