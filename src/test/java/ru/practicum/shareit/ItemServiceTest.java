@@ -1,6 +1,8 @@
 package ru.practicum.shareit;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,15 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingState;
-import ru.practicum.shareit.booking.dto.BookingAddDto;
-import ru.practicum.shareit.booking.dto.BookingAddMapper;
-import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.*;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.dto.CommentAddDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
@@ -26,6 +25,9 @@ import ru.practicum.shareit.user.model.User;
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -35,18 +37,32 @@ import static org.hamcrest.Matchers.notNullValue;
 @Transactional
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemServiceTest {
 
-    private final EntityManager em;
+    final EntityManager em;
 
-    private final ItemService service;
+    final ItemService service;
 
-    private final UserService userService;
+    final UserService userService;
 
-    private final BookingRepository bookingRepository;
+    final BookingRepository bookingRepository;
 
-    private UserDto userDto;
-    private UserDto ownerDto;
+    final BookingService bookingService;
+
+    UserDto userDto;
+
+    UserDto ownerDto;
+
+    User user;
+
+    User owner;
+
+    Item item;
+
+    ItemDto itemDto;
+
+    Long itemFailId = 10L;
 
     @BeforeEach
     void createUser() {
@@ -61,24 +77,18 @@ public class ItemServiceTest {
         ownerDto.setEmail("owner2@email.com");
 
         userService.addUser(ownerDto);
-    }
 
-    @Test
-    void saveItemAndComment() {
         TypedQuery<User> queryUser1 = em.createQuery("Select u from User u where u.email = :email", User.class);
-        User user = queryUser1
+        user = queryUser1
                 .setParameter("email", userDto.getEmail())
                 .getSingleResult();
 
         TypedQuery<User> queryUser2 = em.createQuery("Select u from User u where u.email = :email", User.class);
-        User owner = queryUser2
+        owner = queryUser2
                 .setParameter("email", ownerDto.getEmail())
                 .getSingleResult();
 
-        assertThat(user.getName(), equalTo(userDto.getName()));
-        assertThat(owner.getName(), equalTo(ownerDto.getName()));
-
-        ItemDto itemDto = new ItemDto();
+        itemDto = new ItemDto();
         itemDto.setId(1L);
         itemDto.setName("For Test");
         itemDto.setDescription("For Test");
@@ -89,10 +99,13 @@ public class ItemServiceTest {
         service.addItem(itemDto);
 
         TypedQuery<Item> query = em.createQuery("Select i from Item i where i.name = :name", Item.class);
-        Item item = query
+        item = query
                 .setParameter("name", itemDto.getName())
                 .getSingleResult();
+    }
 
+    @Test
+    void saveItemAndComment() {
         assertThat(item.getId(), notNullValue());
         assertThat(item.getName(), equalTo(itemDto.getName()));
         assertThat(item.getDescription(), equalTo(itemDto.getDescription()));
@@ -127,5 +140,57 @@ public class ItemServiceTest {
         assertThat(comment.getUser(), equalTo(user));
     }
 
+    @Test
+    void findByIdAndOwner() {
+        ItemPublicDto itemFromDb = service.findByIdAndOwner(item.getId(), user.getId());
 
+        assertThat(itemFromDb.getName(), equalTo(item.getName()));
+
+        try {
+            service.findByIdAndOwner(itemFailId, user.getId());
+        } catch (EntityNotFoundException ex) {
+            assertThat(ex.getMessage(), equalTo("Вещь не найдена"));
+        }
+    }
+
+    @Test
+    void updateItem() {
+        ItemUpdateDto itemUpdateDto =  new ItemUpdateDto();
+        itemUpdateDto.setDescription("Updated Item");
+
+
+        ItemDto updatedItem = service.updateItem(itemUpdateDto, owner.getId(), item.getId());
+
+        assertThat(updatedItem.getDescription(), equalTo(itemUpdateDto.getDescription()));
+    }
+
+    public List<Booking> getAllBookingByOwnerId(Long ownerId) {
+        List<Booking> bookings = em.createQuery(
+                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id ORDER BY b.id DESC")
+                .setParameter("id", ownerId)
+                .getResultList();
+        return bookings;
+    }
+
+    @Test
+    void getAllBookingByOwnerId( ){
+        BookingAddDto bookingAddDto = new BookingAddDto();
+        bookingAddDto.setItemId(item.getId());
+        bookingAddDto.setUserId(user.getId());
+        bookingAddDto.setStart(LocalDateTime.now().plusMinutes(10));
+        bookingAddDto.setEnd(LocalDateTime.now().plusHours(1));
+
+        bookingService.addBooking(bookingAddDto);
+
+        List<Booking> allBookingByOwnerId = service.getAllBookingByOwnerId(owner.getId());
+
+        assertThat(allBookingByOwnerId.size(), equalTo(1));
+    }
+
+    @Test
+    void findAllByUser() {
+        List<ItemPublicDto> items = service.findAllByUser(owner.getId());
+
+        assertThat(items.size(), equalTo(1));
+    }
 }

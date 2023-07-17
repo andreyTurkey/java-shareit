@@ -32,8 +32,6 @@ public class ItemService {
 
     final UserService userService;
 
-    //final UserRepository userRepository;
-
     final CheckRentHistory checkRentHistory;
 
     final CommentRepository commentRepository;
@@ -45,7 +43,6 @@ public class ItemService {
     }
 
     public ItemDto addItem(ItemDto itemDto) {
-        //existsById(itemDto.getOwner());
         userService.isUserExists(itemDto.getOwner());
         if (itemDto.getRequestId() == null) {
             itemDto.setRequestId(0L);
@@ -54,7 +51,6 @@ public class ItemService {
     }
 
     public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long userId, Long itemId) {
-        //existsById(userId);
         userService.isUserExists(userId);
         Item item = itemRepository.getReferenceById(itemId);
         if (itemUpdateDto.getName() != null) {
