@@ -237,12 +237,5 @@ public class RequestServiceTest {
                 = itemRequestsService.getAllRequestByPageable(null, null, user2.getId());
 
         assertThat(getAllRequestByPageablePageNull.size(), equalTo(1));
-
-        try {
-            List<ItemRequestPublicDto> getAllRequestByPageablePageFail
-                    = itemRequestsService.getAllRequestByPageable(-1, -1, user2.getId());
-        } catch (NotAvailableException thrown) {
-            assertThat(thrown.getMessage(), equalTo("Проверьте параметры запроса"));
-        }
     }
 }

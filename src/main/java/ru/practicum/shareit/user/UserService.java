@@ -45,10 +45,12 @@ public class UserService {
     }
 
     public List<UserDto> getAllUsers() {
-        return userRepository.findAll().stream().map(UserMapper::getUserDto).collect(Collectors.toList());
+        return userRepository.findAll().stream()
+                .map(UserMapper::getUserDto)
+                .collect(Collectors.toList());
     }
 
-    public boolean isUserExists(Long userId) throws EntityNotFoundException {
+    public boolean isUserExists(Long userId)  {
         Optional<User> user = userRepository.findById(userId);
         if (!user.isPresent()) {
             throw new EntityNotFoundException("Пользователь ID = " + userId + " не найден.");

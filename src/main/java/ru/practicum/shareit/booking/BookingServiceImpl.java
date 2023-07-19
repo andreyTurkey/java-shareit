@@ -18,7 +18,6 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,41 +34,6 @@ public class BookingServiceImpl implements BookingService {
 
     UserService userService;
 
-    EntityManager em;
-
-    public List<Booking> getAllBookingsByUserIdAndFuture(Long userId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b WHERE b.user.id =:id AND b.start > now() ORDER BY id DESC")
-                .setParameter("id", userId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingsByUserIdPast(Long userId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b WHERE b.user.id =:id AND b.end < now() ORDER BY id DESC")
-                .setParameter("id", userId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingsByUserIdCurrent(Long userId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b WHERE b.user.id =:id AND b.start <= now() AND b.end >= now()")
-                .setParameter("id", userId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingsByUserIdAndStatus(Long userId, BookingState state) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b WHERE b.user.id =:id AND b.status  like :state")
-                .setParameter("id", userId)
-                .setParameter("state", state)
-                .getResultList();
-        return bookings;
-    }
-
     @Override
     public BookingDto addBooking(BookingAddDto bookingAddDto)  {
         UserDto userDto = userService.getUserById(bookingAddDto.getUserId());
@@ -82,10 +46,10 @@ public class BookingServiceImpl implements BookingService {
         isAvailable(ItemMapper.getItem(bookingDto.getItem()));
 
         List<Booking> allBookingByItem = bookingRepository.findAllByItem_Id(bookingDto.getItem().getId())
-                .stream().filter(booking -> {
-                    return booking.getStart().isBefore(bookingDto.getStart())
-                            && booking.getEnd().isAfter(bookingDto.getStart());
-                }).collect(Collectors.toList());
+                .stream()
+                .filter(booking -> booking.getStart().isBefore(bookingDto.getStart())
+                            && booking.getEnd().isAfter(bookingDto.getStart()))
+                .collect(Collectors.toList());
 
         if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().equals(bookingDto.getEnd())
                 || bookingDto.getStart().isBefore(LocalDateTime.now()) || allBookingByItem.size() != 0) {
@@ -135,8 +99,6 @@ public class BookingServiceImpl implements BookingService {
 
         if (from == null && size == null) {
             return getAllBookingsByUserIdWithoutPageable(null, userId, state);
-        } else if (from < 0 || size <= 0) {
-            throw new NotAvailableException("Проверьте параметры запроса");
         } else {
             Sort sortById = Sort.by(Sort.Direction.DESC, "id");
             Pageable page = PageRequest.of(from > 0 ? from / size : 0, size, sortById);
@@ -145,17 +107,19 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    public List<Booking> getAllBookingsByUserId(Long userId, Pageable page) {
-        List<Long> bookingsIds = bookingRepository.findBookingByUserId(userId, page).getContent().stream().map(t -> {
-            return t.getId();
-        }).collect(Collectors.toList());
+    private List<Booking> getAllBookingsByUserId(Long userId, Pageable page) {
+        List<Long> bookingsIds = bookingRepository.findBookingByUserId(userId, page)
+                .getContent()
+                .stream()
+                .map(t -> t.getId())
+                .collect(Collectors.toList());
 
-        List<Booking> findAllByPageable = bookingRepository.findAllByBookingsId(bookingsIds);
+        List<Booking> findAllByPageable = bookingRepository.findAllByIdInOrderByIdDesc(bookingsIds);
 
         return findAllByPageable;
     }
 
-    public List<BookingDto> getAllBookingsByUserIdWithoutPageable(Pageable page, Long userId, String state) {
+    private List<BookingDto> getAllBookingsByUserIdWithoutPageable(Pageable page, Long userId, String state) {
         List<Booking> bookings;
 
         switch (BookingState.getBookingState(state)) {
@@ -163,70 +127,26 @@ public class BookingServiceImpl implements BookingService {
                 bookings = getAllBookingsByUserId(userId, page);
                 break;
             case FUTURE:
-                bookings = getAllBookingsByUserIdAndFuture(userId);
+                bookings = bookingRepository.getAllByUserIdAndStartIsAfterNow(userId);
                 break;
             case PAST:
-                bookings = getAllBookingsByUserIdPast(userId);
+                bookings = bookingRepository.getAllBookingsByUserIdPast(userId);
                 break;
             case CURRENT:
-                bookings = getAllBookingsByUserIdCurrent(userId);
+                bookings = bookingRepository.getAllBookingsByUserIdCurrent(userId);
                 break;
             case WAITING:
-                bookings = getAllBookingsByUserIdAndStatus(userId, BookingState.WAITING);
+                bookings = bookingRepository.getAllBookingsByUserIdAndStatus(userId, BookingState.WAITING);
                 break;
             case REJECTED:
-                bookings = getAllBookingsByUserIdAndStatus(userId, BookingState.REJECTED);
+                bookings = bookingRepository.getAllBookingsByUserIdAndStatus(userId, BookingState.REJECTED);
                 break;
             default:
                 throw new NotAvailableException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookings.stream()
-                .map(BookingMapper::getBookingDto).collect(Collectors.toList());
-    }
-
-    public List<Booking> getAllBookingByOwnerId(Long ownerId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id ORDER BY b.id DESC")
-                .setParameter("id", ownerId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingByOwnerIdFuture(Long ownerId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id " +
-                                " AND b.start >= now() ORDER BY b.id DESC")
-                .setParameter("id", ownerId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingByOwnerIdPast(Long ownerId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id " +
-                                " AND b.end <= now() ORDER BY b.id DESC")
-                .setParameter("id", ownerId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingByOwnerIdCurrent(Long ownerId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id " +
-                                " AND b.start <= now() AND  b.end >= now() ORDER BY b.id DESC")
-                .setParameter("id", ownerId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingByOwnerIdStatus(Long ownerId, BookingState state) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id " +
-                                " AND b.status  like :state ORDER BY b.id DESC")
-                .setParameter("id", ownerId)
-                .setParameter("state", state)
-                .getResultList();
-        return bookings;
+                .map(BookingMapper::getBookingDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -235,28 +155,30 @@ public class BookingServiceImpl implements BookingService {
 
         if (from == null && size == null) {
             return getAllBookingsByOwnerIdWithoutPageable(null, ownerId, state);
-        } else if (from < 0 || size <= 0) {
-            throw new NotAvailableException("Проверьте параметры запроса");
         } else {
             Sort sortById = Sort.by(Sort.Direction.DESC, "id");
 
             Pageable page = PageRequest.of(from > 0 ? from / size : 0, size, sortById);
-            return getAllBookingsByOwnerId(ownerId, page).stream().map(BookingMapper::getBookingDto)
+            return getAllBookingsByOwnerId(ownerId, page)
+                    .stream()
+                    .map(BookingMapper::getBookingDto)
                     .collect(Collectors.toList());
         }
     }
 
-    public List<Booking> getAllBookingsByOwnerId(Long ownerId, Pageable page) {
-        List<Long> bookingsIds = bookingRepository.findBookingByOwnerId(ownerId, page).getContent().stream().map(t -> {
-            return t.getId();
-        }).collect(Collectors.toList());
+    private List<Booking> getAllBookingsByOwnerId(Long ownerId, Pageable page) {
+        List<Long> bookingsIds = bookingRepository.findBookingByOwnerId(ownerId, page)
+                .getContent()
+                .stream()
+                .map(t -> t.getId())
+                .collect(Collectors.toList());
 
-        List<Booking> findAllByPageable = bookingRepository.findAllByBookingsId(bookingsIds);
+        List<Booking> findAllByPageable = bookingRepository.findAllByIdInOrderByIdDesc(bookingsIds);
 
         return findAllByPageable;
     }
 
-    public List<BookingDto> getAllBookingsByOwnerIdWithoutPageable(Pageable page, Long ownerId, String state) {
+    private List<BookingDto> getAllBookingsByOwnerIdWithoutPageable(Pageable page, Long ownerId, String state) {
 
         List<Booking> bookings;
 
@@ -264,28 +186,29 @@ public class BookingServiceImpl implements BookingService {
 
         switch (BookingState.getBookingState(state)) {
             case ALL:
-                bookings = getAllBookingByOwnerId(ownerId);
+                bookings = bookingRepository.getAllBookingByOwnerId(ownerId);
                 break;
             case FUTURE:
-                bookings = getAllBookingByOwnerIdFuture(ownerId);
+                bookings = bookingRepository.getAllBookingByOwnerIdFuture(ownerId);
                 break;
             case PAST:
-                bookings = getAllBookingByOwnerIdPast(ownerId);
+                bookings = bookingRepository.getAllBookingByOwnerIdPast(ownerId);
                 break;
             case CURRENT:
-                bookings = getAllBookingByOwnerIdCurrent(ownerId);
+                bookings = bookingRepository.getAllBookingByOwnerIdCurrent(ownerId);
                 break;
             case WAITING:
-                bookings = getAllBookingByOwnerIdStatus(ownerId, BookingState.WAITING);
+                bookings = bookingRepository.getAllBookingByOwnerIdStatus(ownerId, BookingState.WAITING);
                 break;
             case REJECTED:
-                bookings = getAllBookingByOwnerIdStatus(ownerId, BookingState.REJECTED);
+                bookings = bookingRepository.getAllBookingByOwnerIdStatus(ownerId, BookingState.REJECTED);
                 break;
             default:
                 throw new NotAvailableException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookings.stream()
-                .map(BookingMapper::getBookingDto).collect(Collectors.toList());
+                .map(BookingMapper::getBookingDto)
+                .collect(Collectors.toList());
     }
 
     private void existsById(BookingDto bookingDto) {

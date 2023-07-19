@@ -15,7 +15,6 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -35,8 +34,6 @@ public class ItemService {
     final CheckRentHistory checkRentHistory;
 
     final CommentRepository commentRepository;
-
-    final EntityManager em;
 
     public ItemDto getItemById(Long itemId) {
         return ItemMapper.getItemDto(itemRepository.getById(itemId));
@@ -73,29 +70,10 @@ public class ItemService {
                 .map(CommentMapper::getPublicCommentDto)
                 .collect(Collectors.toList());
 
-        List<Booking> allBookingsByOwnerId = getAllBookingByOwnerIdAndItemId(userId, itemId);
+        List<Booking> allBookingsByOwnerId = itemRepository.getAllBookingByOwnerIdAndItemId(userId, itemId);
 
         return ItemMapperGetOwnerDto.getPublicItemDto(item, userId, publicComments,
                 getLastAndNextBooking(itemId, allBookingsByOwnerId));
-    }
-
-    public List<Booking> getAllBookingByOwnerIdAndItemId(Long ownerId, Long itemId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:ownerId " +
-                                " AND b.item.id =:itemId " +
-                                " ORDER BY b.id DESC")
-                .setParameter("ownerId", ownerId)
-                .setParameter("itemId", itemId)
-                .getResultList();
-        return bookings;
-    }
-
-    public List<Booking> getAllBookingByOwnerId(Long ownerId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id ORDER BY b.id DESC")
-                .setParameter("id", ownerId)
-                .getResultList();
-        return bookings;
     }
 
     public List<ItemPublicDto> findAllByUser(Long ownerId) {
@@ -104,7 +82,7 @@ public class ItemService {
 
         List<Item> itemsByOwner = itemRepository.findAllByOwner(ownerId);
 
-        List<Booking> allBookingsAllItemsByOwner = getAllBookingByOwnerId(ownerId);
+        List<Booking> allBookingsAllItemsByOwner = itemRepository.getAllBookingByOwnerId(ownerId);
 
         List<CommentPublicDto> allCommentByItemByUser = commentRepository.findCommentByAllItemByUserId(ownerId).stream()
                 .map(CommentMapper::getPublicCommentDto).collect(Collectors.toList());

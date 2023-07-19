@@ -4,14 +4,17 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestPublicDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Validated
 @Slf4j
 @AllArgsConstructor
 @RestController
@@ -46,7 +49,7 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestPublicDto> getRequestByParam(@RequestHeader(value = USER_ID) Long userId,
+    public List<ItemRequestPublicDto> getRequestByParam(@RequestHeader(value = USER_ID) Long userId, @PositiveOrZero
                                                         @RequestParam(value = "from", required = false) Integer from,
                                                         @RequestParam(value = "size", required = false) Integer size) {
         log.debug("Получен постраничный запрос запросов ");

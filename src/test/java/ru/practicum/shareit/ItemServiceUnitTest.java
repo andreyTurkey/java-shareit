@@ -42,8 +42,7 @@ public class ItemServiceUnitTest {
         itemService = new ItemService(mockItemRepository,
                 mockUserService,
                 mockCheckRentHistory,
-                mockCommentRepository,
-                mockEm);
+                mockCommentRepository);
     }
 
     @Test

@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemPublicDto;
@@ -15,7 +14,6 @@ import ru.practicum.shareit.user.UserService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,8 +29,6 @@ public class ItemRequestsService {
 
     final UserService userService;
 
-    final EntityManager em;
-
     public ItemRequestDto addRequest(ItemRequestDto itemRequestDto) {
         userService.isUserExists(itemRequestDto.getUserId());
 
@@ -42,13 +38,18 @@ public class ItemRequestsService {
     public List<ItemRequestPublicDto> getAllRequestByUserId(Long userId) {
         userService.isUserExists(userId);
 
+        List<ItemRequest> allRequestsByUser = itemRequestsRepository.getItemRequestByUserId(userId);
+
+        List<Item> allItemsByRequests = itemRepository.findAllByRequestIdIn(allRequestsByUser
+                .stream()
+                .map(t -> t.getId())
+                .collect(Collectors.toList()));
+
         Set<ItemRequestPublicDto> requests = new HashSet<>();
 
-        Set<ItemPublicDto> items = new HashSet<>();
+        Map<Long, List<ItemPublicDto>> newRequests = new HashMap<>();
 
-        List<ItemRequestJoinAnswer> requestJoinAnswers = getAllRequestByUserIdJoinAnswer(userId);
-
-        for (ItemRequestJoinAnswer requestJoinAnswer : requestJoinAnswers) {
+        for (ItemRequest requestJoinAnswer : allRequestsByUser) {
 
             ItemRequestPublicDto itemRequestPublicDto = new ItemRequestPublicDto();
             itemRequestPublicDto.setId(requestJoinAnswer.getId());
@@ -56,63 +57,23 @@ public class ItemRequestsService {
             itemRequestPublicDto.setCreated(requestJoinAnswer.getCreated());
             itemRequestPublicDto.setItems(new ArrayList<>());
 
+            newRequests.put(itemRequestPublicDto.getId(), new ArrayList<>());
             requests.add(itemRequestPublicDto);
         }
 
-        for (ItemRequestJoinAnswer requestJoinAnswer : requestJoinAnswers) {
-            if (requestJoinAnswer.getItemId() == null) {
-                break;
-            } else {
-                items.add(ItemMapper.getItemPublicDto(requestJoinAnswer));
+        for (Item requestAnswer : allItemsByRequests) {
+            if (newRequests.containsKey(requestAnswer.getRequestId())) {
+                ItemPublicDto newItemPublicDto = ItemMapper.getItemPublicDtoFromItem(requestAnswer);
+                newRequests.get(requestAnswer.getRequestId()).add(newItemPublicDto);
             }
         }
 
         for (ItemRequestPublicDto requestPublicDto : requests) {
-            for (ItemPublicDto item : items) {
-                if (requestPublicDto.getId().equals(item.getRequestId())) {
-                    requestPublicDto.getItems().add(item);
-                }
+            if (newRequests.containsKey(requestPublicDto.getId())) {
+                requestPublicDto.setItems(newRequests.get(requestPublicDto.getId()));
             }
         }
         return new ArrayList<>(requests);
-    }
-
-    public List<ItemRequestJoinAnswer> getAllRequestByUserIdJoinAnswer(Long userId) {
-        List<ItemRequestJoinAnswer> requests = em.createQuery(
-                        "SELECT new ru.practicum.shareit.request.dto.ItemRequestJoinAnswer (" +
-                                "ir.id as id, " +
-                                "ir.description as description, " +
-                                "ir.userId as userId, " +
-                                "ir.created as created, " +
-                                "it.id as itemId, " +
-                                "it.name as itemName, " +
-                                "it.description as itemDescription, " +
-                                "it.available as itemAvailable) " +
-                                "from ItemRequest ir " +
-                                "LEFT JOIN Item it on ir.id = it.requestId WHERE ir.userId =:id ORDER BY ir.id DESC")
-                .setParameter("id", userId)
-                .getResultList();
-
-        return requests;
-    }
-
-    public List<ItemRequestJoinAnswer> getRequestByIdJoinAnswer(Long requestId) {
-        List<ItemRequestJoinAnswer> requests = em.createQuery(
-                        "SELECT new ru.practicum.shareit.request.dto.ItemRequestJoinAnswer (" +
-                                "ir.id as id, " +
-                                "ir.description as description, " +
-                                "ir.userId as userId, " +
-                                "ir.created as created, " +
-                                "it.id as itemId, " +
-                                "it.name as itemName, " +
-                                "it.description as itemDescription, " +
-                                "it.available as itemAvailable) " +
-                                "from ItemRequest ir " +
-                                "LEFT JOIN Item it on ir.id = it.requestId WHERE ir.id =:id ORDER BY ir.id DESC")
-                .setParameter("id", requestId)
-                .getResultList();
-
-        return requests;
     }
 
     public boolean requestExist(Long requestId) {
@@ -122,38 +83,27 @@ public class ItemRequestsService {
         return true;
     }
 
+    private ItemRequest getRequestById(Long requestId) {
+        ItemRequest request = itemRequestsRepository.getReferenceById(requestId);
+        return request;
+    }
+
     public ItemRequestPublicDto getRequestById(Long requestId, Long userId) {
         userService.isUserExists(userId);
-
         requestExist(requestId);
 
-        ItemRequestJoinAnswer itemRequestJoinAnswer = null;
+        ItemRequest request = getRequestById(requestId);
 
-        Set<ItemPublicDto> items = new HashSet<>();
-
-        List<ItemRequestJoinAnswer> requestJoinAnswersForAnswer = getRequestByIdJoinAnswer(requestId);
-
-        Optional<ItemRequestJoinAnswer> requestJoinAnswers = getRequestByIdJoinAnswer(requestId)
-                .stream().limit(1).findFirst();
-
-        if (requestJoinAnswers.isPresent()) {
-            itemRequestJoinAnswer = requestJoinAnswers.get();
-        }
+        List<ItemPublicDto> itemsByRequest = itemRepository.findAllByRequestId(requestId)
+                .stream()
+                .map(ItemMapper::getItemPublicDtoFromItem)
+                .collect(Collectors.toList());
 
         ItemRequestPublicDto itemRequestPublicDto = new ItemRequestPublicDto();
-        itemRequestPublicDto.setId(itemRequestJoinAnswer.getId());
-        itemRequestPublicDto.setDescription(itemRequestJoinAnswer.getDescription());
-        itemRequestPublicDto.setCreated(itemRequestJoinAnswer.getCreated());
-        itemRequestPublicDto.setItems(new ArrayList<>());
-
-        for (ItemRequestJoinAnswer requestJoinAnswer : requestJoinAnswersForAnswer) {
-            if (requestJoinAnswer.getItemId() == null) {
-                break;
-            } else {
-                items.add(ItemMapper.getItemPublicDto(requestJoinAnswer));
-            }
-        }
-        itemRequestPublicDto.setItems(new ArrayList<>(items));
+        itemRequestPublicDto.setId(request.getId());
+        itemRequestPublicDto.setDescription(request.getDescription());
+        itemRequestPublicDto.setCreated(request.getCreated());
+        itemRequestPublicDto.setItems(itemsByRequest);
 
         return itemRequestPublicDto;
     }
@@ -165,39 +115,55 @@ public class ItemRequestsService {
             return buildingRequests(null, userId);
         }
 
-        if (from < 0 || size <= 0) {
-            throw new NotAvailableException("Проверьте параметры запроса");
-        }
-
-        Sort sortById = Sort.by(Sort.Direction.DESC, "id");
+        Sort sortById = Sort.by(Sort.Direction.DESC, "created");
         Pageable page = PageRequest.of(from > 0 ? from / size : 0, size, sortById);
 
         return buildingRequests(page, userId);
     }
 
-    public List<ItemRequestPublicDto> buildingRequests(Pageable page, Long userId) {
+    private List<ItemRequestPublicDto> buildingRequests(Pageable page, Long userId) {
         List<ItemRequestPublicDto> itemRequestsByPageable;
+
+        Map<Long, List<Item>> newRequests = new HashMap<>();
+
         if (page == null) {
-            itemRequestsByPageable = itemRequestsRepository.findAll().stream().filter(t -> {
-                return (!t.getUserId().equals(userId));
-            }).map(ItemRequestMapper::getItemRequestPublicDto).collect(Collectors.toList());
+            itemRequestsByPageable = itemRequestsRepository.findAll()
+                    .stream()
+                    .filter(t -> (!t.getUserId().equals(userId)))
+                    .map(ItemRequestMapper::getItemRequestPublicDto)
+                    .collect(Collectors.toList());
+            for (ItemRequestPublicDto request : itemRequestsByPageable) {
+                newRequests.put(request.getId(), new ArrayList<>());
+            }
         } else {
-            itemRequestsByPageable = itemRequestsRepository.findAll(page).filter(t -> {
-                return (!t.getUserId().equals(userId));
-            }).map(ItemRequestMapper::getItemRequestPublicDto).toList();
+            itemRequestsByPageable = itemRequestsRepository.findAll(page)
+                    .stream()
+                    .filter(t -> (!t.getUserId().equals(userId)))
+                    .map(ItemRequestMapper::getItemRequestPublicDto)
+                    .collect(Collectors.toList());
+            for (ItemRequestPublicDto request : itemRequestsByPageable) {
+                newRequests.put(request.getId(), new ArrayList<>());
+            }
+        }
+        List<Long> requestsId = itemRequestsByPageable.stream()
+                .map(t -> t.getId())
+                .collect(Collectors.toList());
+
+        List<Item> findAllByList = itemRepository.findAllByRequestIdIn(requestsId);
+
+        for (Item newItem : findAllByList) {
+            if (newRequests.containsKey(newItem.getRequestId())) {
+                newRequests.get(newItem.getRequestId()).add(newItem);
+            }
         }
 
-        List<Long> requestsId = itemRequestsByPageable.stream().map(t -> {
-            return t.getId();
-        }).collect(Collectors.toList());
-
-        List<Item> findAllByList = itemRepository.findAllByRequestId(requestsId);
-
-        for (ItemRequestPublicDto request : itemRequestsByPageable) {
-            for (Item item : findAllByList) {
-                if (request.getId().equals(item.getRequestId())) {
-                    request.getItems().add(ItemMapper.getItemPublicDtoFromItem(item));
-                }
+        for (ItemRequestPublicDto newRequest : itemRequestsByPageable) {
+            if (newRequests.containsKey(newRequest.getId())) {
+                newRequest.setItems(newRequests.get(newRequest.getId())
+                        .stream()
+                        .map(ItemMapper::getItemPublicDtoFromItem)
+                        .collect(Collectors.toList())
+                );
             }
         }
         return itemRequestsByPageable;

@@ -12,7 +12,6 @@ import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.dto.*;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
@@ -43,8 +42,6 @@ public class ItemServiceTest {
     final UserService userService;
 
     final BookingRepository bookingRepository;
-
-    final BookingService bookingService;
 
     UserDto userDto;
 
@@ -160,29 +157,6 @@ public class ItemServiceTest {
         ItemDto updatedItem = service.updateItem(itemUpdateDto, owner.getId(), item.getId());
 
         assertThat(updatedItem.getDescription(), equalTo(itemUpdateDto.getDescription()));
-    }
-
-    public List<Booking> getAllBookingByOwnerId(Long ownerId) {
-        List<Booking> bookings = em.createQuery(
-                        "SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id ORDER BY b.id DESC")
-                .setParameter("id", ownerId)
-                .getResultList();
-        return bookings;
-    }
-
-    @Test
-    void getAllBookingByOwnerId() {
-        BookingAddDto bookingAddDto = new BookingAddDto();
-        bookingAddDto.setItemId(item.getId());
-        bookingAddDto.setUserId(user.getId());
-        bookingAddDto.setStart(LocalDateTime.now().plusMinutes(10));
-        bookingAddDto.setEnd(LocalDateTime.now().plusHours(1));
-
-        bookingService.addBooking(bookingAddDto);
-
-        List<Booking> allBookingByOwnerId = service.getAllBookingByOwnerId(owner.getId());
-
-        assertThat(allBookingByOwnerId.size(), equalTo(1));
     }
 
     @Test

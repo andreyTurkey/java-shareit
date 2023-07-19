@@ -2,13 +2,16 @@ package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingAddDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+@Validated
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -47,7 +50,7 @@ public class BookingController {
     public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = USER_ID) Long bookerId,
                                                      @RequestParam(value = "state",
                                                              defaultValue = "ALL") String state,
-                                                     @RequestParam(value = "from", required = false) Integer from,
+                                                     @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
                                                      @RequestParam(value = "size", required = false) Integer size) {
         log.debug("Запрошены все бронирования пользователя ID = {}", bookerId);
         return bookingServiceDB.getAllBookingsByUserId(bookerId, state, from, size);
@@ -55,7 +58,7 @@ public class BookingController {
 
     @GetMapping(value = "/owner")
     public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = USER_ID) Long ownerId,
-                                                    @RequestParam(value = "from", required = false) Integer from,
+                                                    @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
                                                     @RequestParam(value = "size", required = false) Integer size,
                                                     @RequestParam(value = "state",
                                                             defaultValue = "ALL") String state) {

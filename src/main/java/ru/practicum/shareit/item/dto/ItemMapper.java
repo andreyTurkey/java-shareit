@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.dto.ItemRequestJoinAnswer;
 
 public class ItemMapper {
 
@@ -27,17 +26,6 @@ public class ItemMapper {
         item.setAvailable(itemDto.getAvailable());
 
         return item;
-    }
-
-    public static ItemPublicDto getItemPublicDto(ItemRequestJoinAnswer requestJoinAnswer) {
-        ItemPublicDto itemPublicDto = new  ItemPublicDto();
-        itemPublicDto.setId(requestJoinAnswer.getItemId());
-        itemPublicDto.setName(requestJoinAnswer.getItemName());
-        itemPublicDto.setDescription(requestJoinAnswer.getItemDescription());
-        itemPublicDto.setAvailable(requestJoinAnswer.getItemAvailable());
-        itemPublicDto.setRequestId(requestJoinAnswer.getId());
-
-        return itemPublicDto;
     }
 
     public static ItemPublicDto getItemPublicDtoFromItem(Item item) {

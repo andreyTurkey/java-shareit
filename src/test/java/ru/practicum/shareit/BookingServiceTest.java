@@ -261,13 +261,6 @@ public class BookingServiceTest {
 
         assertThat(bookingsByUserId.size(), equalTo(1));
 
-        try {
-            List<BookingDto> bookingsByUserIdFail = bookingService.getAllBookingsByUserId(
-                    user.getId(), "ALL", -1, 0);
-        } catch (NotAvailableException thrown) {
-            assertThat(thrown.getMessage(), equalTo("Проверьте параметры запроса"));
-        }
-
         List<BookingDto> bookingsByUserIdWithPage = bookingService.getAllBookingsByUserId(
                 user.getId(), "ALL", 0, 20);
 
@@ -325,13 +318,6 @@ public class BookingServiceTest {
                 owner.getId(), "ALL", 0, 20);
 
         assertThat(allBookingsByOwnerId.size(), equalTo(1));
-
-        try {
-            List<BookingDto> bookingsByOwnerIdFail = bookingService.getAllBookingsByOwnerId(
-                    owner.getId(), "ALL", -1, 0);
-        } catch (NotAvailableException thrown) {
-            assertThat(thrown.getMessage(), equalTo("Проверьте параметры запроса"));
-        }
 
         List<BookingDto> bookingsByOwnerIdWithoutPage = bookingService.getAllBookingsByOwnerId(
                 owner.getId(), "ALL", null, null);
