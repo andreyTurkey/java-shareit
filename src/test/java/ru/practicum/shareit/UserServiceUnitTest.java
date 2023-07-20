@@ -111,7 +111,7 @@ public class UserServiceUnitTest {
 
         final EntityNotFoundException exception = Assertions.assertThrows(
                 EntityNotFoundException.class,
-                () -> userService.isUserExists(user.getId()));
+                () -> userService.throwExceptionIfUserNotFound(user.getId()));
 
         Assertions.assertEquals("Пользователь ID = " + user.getId() + " не найден.", exception.getMessage());
     }
