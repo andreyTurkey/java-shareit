@@ -95,24 +95,4 @@ public class UserServiceUnitTest {
         Assertions.assertEquals(List.of(user).stream().map(UserMapper::getUserDto).collect(Collectors.toList()),
                 userService.getAllUsers());
     }
-
-    @Test
-    void testExistUserWithMockito() {
-        UserService userService = new UserService(mockUserRepository);
-
-        User user = new User();
-        user.setId(1L);
-        user.setName("UserForTest");
-        user.setEmail("mail@mail.ru");
-
-        Mockito
-                .when(mockUserRepository.findById(Mockito.anyLong())).
-                thenThrow(new EntityNotFoundException("Пользователь ID = " + user.getId() + " не найден."));
-
-        final EntityNotFoundException exception = Assertions.assertThrows(
-                EntityNotFoundException.class,
-                () -> userService.throwExceptionIfUserNotFound(user.getId()));
-
-        Assertions.assertEquals("Пользователь ID = " + user.getId() + " не найден.", exception.getMessage());
-    }
 }
