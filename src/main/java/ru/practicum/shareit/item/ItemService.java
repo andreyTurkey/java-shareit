@@ -40,7 +40,8 @@ public class ItemService {
     }
 
     public ItemDto addItem(ItemDto itemDto) {
-        userService.isUserExists(itemDto.getOwner());
+        userService.throwExceptionIfUserNotFound(itemDto.getOwner());
+
         if (itemDto.getRequestId() == null) {
             itemDto.setRequestId(0L);
         }
@@ -48,7 +49,8 @@ public class ItemService {
     }
 
     public ItemDto updateItem(ItemUpdateDto itemUpdateDto, Long userId, Long itemId) {
-        userService.isUserExists(userId);
+        userService.throwExceptionIfUserNotFound(userId);
+
         Item item = itemRepository.getReferenceById(itemId);
         if (itemUpdateDto.getName() != null) {
             item.setName(itemUpdateDto.getName());
@@ -84,13 +86,18 @@ public class ItemService {
 
         List<Booking> allBookingsAllItemsByOwner = itemRepository.getAllBookingByOwnerId(ownerId);
 
-        List<CommentPublicDto> allCommentByItemByUser = commentRepository.findCommentByAllItemByUserId(ownerId).stream()
-                .map(CommentMapper::getPublicCommentDto).collect(Collectors.toList());
+        List<CommentPublicDto> allCommentByItemByUser = commentRepository.findCommentByAllItemByUserId(ownerId)
+                .stream()
+                .map(CommentMapper::getPublicCommentDto)
+                .collect(Collectors.toList());
 
         for (Item item : itemsByOwner) {
             List<BookingGetOwnerDto> getLastAndNextBooking = getLastAndNextBooking(item.getId(), allBookingsAllItemsByOwner);
 
-            convertedItems.add(ItemMapperGetOwnerDto.getPublicItemDto(item, ownerId, allCommentByItemByUser,
+            convertedItems.add(ItemMapperGetOwnerDto.getPublicItemDto(
+                    item,
+                    ownerId,
+                    allCommentByItemByUser,
                     getLastAndNextBooking));
         }
         return convertedItems;
@@ -99,11 +106,11 @@ public class ItemService {
     private List<BookingGetOwnerDto> getLastAndNextBooking(Long itemId, List<Booking> allBookingByUser) {
         List<BookingGetOwnerDto> lastAndNextBooking = new ArrayList<>();
 
-        List<Booking> allBookingByItemOrderEnd = allBookingByUser.stream().filter(booking -> {
-                    return booking.getItem().getId().equals(itemId);
-                })
+        List<Booking> allBookingByItemOrderEnd = allBookingByUser.stream()
+                .filter(booking -> booking.getItem().getId().equals(itemId))
                 .filter(booking -> booking.getStart().isBefore(LocalDateTime.now()))
-                .sorted(Comparator.comparing(Booking::getEnd).reversed()).collect(Collectors.toList());
+                .sorted(Comparator.comparing(Booking::getEnd).reversed())
+                .collect(Collectors.toList());
 
         if (!(allBookingByItemOrderEnd.size() == 0) && !allBookingByItemOrderEnd.get(0).getStatus()
                 .equals(BookingState.REJECTED)) {
@@ -112,11 +119,11 @@ public class ItemService {
             lastAndNextBooking.add(null);
         }
 
-        List<Booking> allBookingByItemOrderStart = allBookingByUser.stream().filter(booking -> {
-                    return booking.getItem().getId().equals(itemId);
-
-                }).filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
-                .sorted(Comparator.comparing(Booking::getEnd)).collect(Collectors.toList());
+        List<Booking> allBookingByItemOrderStart = allBookingByUser.stream()
+                .filter(booking -> booking.getItem().getId().equals(itemId))
+                .filter(booking -> booking.getStart().isAfter(LocalDateTime.now()))
+                .sorted(Comparator.comparing(Booking::getEnd))
+                .collect(Collectors.toList());
 
         if (!(allBookingByItemOrderStart.size() == 0) && !allBookingByItemOrderStart.get(0).getStatus()
                 .equals(BookingState.REJECTED)) {
@@ -147,15 +154,11 @@ public class ItemService {
     }
 
     private void existsById(Long userId) {
-        if (!userService.isUserExists(userId)) {
-            throw new EntityNotFoundException("Проверьте ID = " + userId + " пользователя");
-        }
+        userService.throwExceptionIfUserNotFound(userId);
     }
 
-    public boolean existsByItemId(Long itemId) {
-        if (!itemRepository.existsById(itemId)) {
-            throw new EntityNotFoundException("Вещь c ID =" + itemId + " не найдена.");
-        }
-        return true;
+    public void existsByItemId(Long itemId) {
+        itemRepository.findById(itemId).orElseThrow(
+                () -> new EntityNotFoundException("Вещь c ID =" + itemId + " не найдена."));
     }
 }

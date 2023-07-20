@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "items", schema = "public")
@@ -13,7 +14,6 @@ import javax.validation.constraints.NotNull;
 @Setter
 @ToString
 @RequiredArgsConstructor
-@EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Item {
 
@@ -39,4 +39,17 @@ public class Item {
 
     @Column(name = "requestId")
     Long requestId;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(id, item.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

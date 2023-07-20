@@ -55,7 +55,9 @@ public class BookingServiceImpl implements BookingService {
                 || bookingDto.getStart().isBefore(LocalDateTime.now()) || allBookingByItem.size() != 0) {
             throw new NotAvailableException("Проверьте даты бронирования");
         }
-        existsById(bookingDto);
+
+        userExistsById(bookingDto.getBooker().getId());
+        itemExistsById(bookingDto.getItem().getId());
 
         bookingAddDto.setStatus(BookingState.WAITING);
         return BookingMapper.getBookingDto(bookingRepository.save(BookingMapper.getBooking(bookingDto)));
@@ -211,20 +213,14 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    private void existsById(BookingDto bookingDto) {
-        if (!itemService.existsByItemId(bookingDto.getItem().getId())) {
-            throw new EntityNotFoundException("Вещь " + bookingDto.getItem().getName() + " не найдена.");
-        }
-        if (!userService.isUserExists(bookingDto.getBooker().getId())) {
-            throw new EntityNotFoundException("Проверьте ID = " + bookingDto.getBooker().getId() + " пользователя");
-        }
+    private void userExistsById(Long userId) {
+        userService.throwExceptionIfUserNotFound(userId);
     }
 
-    private void userExistsById(Long userId) {
-        if (!userService.isUserExists(userId)) {
-            throw new EntityNotFoundException("Проверьте ID = " + userId + " пользователя");
-        }
+    private void itemExistsById(Long itemId) {
+        itemService.existsByItemId(itemId);
     }
+
 
     private void isAvailable(Item item) {
         if (!item.getAvailable()) {

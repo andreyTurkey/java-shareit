@@ -10,7 +10,6 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,13 +49,8 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    public boolean isUserExists(Long userId)  {
-        Optional<User> user = userRepository.findById(userId);
-        if (!user.isPresent()) {
-            throw new EntityNotFoundException("Пользователь ID = " + userId + " не найден.");
-        } else {
-            return true;
-        }
+    public void throwExceptionIfUserNotFound(Long userId)  {
+        userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("Пользователь ID = " + userId + " не найден."));
     }
 }
 

@@ -94,7 +94,7 @@ public class UserServiceTest {
     @Test
     void  isUserExists() {
         try {
-            service.isUserExists(failUserId);
+            service.throwExceptionIfUserNotFound(failUserId);
         } catch (EntityNotFoundException ex) {
             assertThat(ex.getMessage(), equalTo("Пользователь ID = " + failUserId + " не найден."));
         }
