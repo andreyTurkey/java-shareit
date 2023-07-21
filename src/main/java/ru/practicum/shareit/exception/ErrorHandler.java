@@ -23,15 +23,8 @@ public class ErrorHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleItemNotFoundException(final EntityNotFoundException e) {
+    public ErrorResponse handleEntityNotFoundException(final EntityNotFoundException e) {
         log.error(e.getMessage() + " - объект не найден");
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateEmailException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleDuplicateEmailException(final DuplicateEmailException e) {
-        log.error(e.getMessage() + " - ошибка валидации EMAIL");
         return new ErrorResponse(e.getMessage());
     }
 

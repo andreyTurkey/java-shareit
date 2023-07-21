@@ -7,10 +7,10 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class CommentAddDto {
 
     Long id;

@@ -7,7 +7,6 @@ import ru.practicum.shareit.exception.NotAvailableException;
 import ru.practicum.shareit.item.dto.CommentAddDto;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -27,7 +26,6 @@ public class CheckRentHistory {
     }
 
     public boolean isUserTookItem(CommentAddDto commentAddDto) {
-        LocalDateTime now = LocalDateTime.now();
         List<Booking> allBookingsByUserId = getAllBookingByUserIdInPastOrderByIdDesc(commentAddDto.getUserId());
         if (allBookingsByUserId.size() == 0) {
             throw new NotAvailableException("Пользователь не брал вещь в аренду.");

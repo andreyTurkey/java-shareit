@@ -8,10 +8,10 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class CommentDto {
 
     Long id;

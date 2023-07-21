@@ -7,10 +7,10 @@ import ru.practicum.shareit.booking.BookingState;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class BookingGetOwnerDto {
 
     Long id;

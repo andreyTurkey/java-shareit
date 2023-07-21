@@ -1,6 +1,6 @@
 package ru.practicum.shareit.user;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -9,16 +9,13 @@ import ru.practicum.shareit.user.dto.UserUpdateDto;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Slf4j
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping(path = "/users")
 public class UserController {
 
-    final UserService userService;
+    private final UserService userService;
 
     @PostMapping
     public UserDto addUser(@Valid @RequestBody UserDto userDto) {
@@ -27,9 +24,9 @@ public class UserController {
     }
 
     @PatchMapping(value = "/{userId}")
-    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserUpdateDto userDto) {
-        userDto.setId(userId);
-        userService.updateUser(userDto);
+    public UserDto updateUser(@PathVariable Long userId, @RequestBody UserUpdateDto userUpdateDto) {
+        userUpdateDto.setId(userId);
+        userService.updateUser(userUpdateDto);
         log.debug("Получен запрос на обновление пользователя с  ID = {} ", userId);
         return userService.getUserById(userId);
     }

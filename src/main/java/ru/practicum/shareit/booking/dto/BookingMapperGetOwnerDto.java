@@ -5,13 +5,14 @@ import ru.practicum.shareit.booking.model.Booking;
 public class BookingMapperGetOwnerDto {
 
     public static BookingGetOwnerDto getBookingGetOwnerDto(Booking booking) {
-        return new BookingGetOwnerDto.BookingGetOwnerDtoBuilder()
-                .id(booking.getId())
-                .bookerId(booking.getUser().getId())
-                .itemId(booking.getItem().getId())
-                .status(booking.getStatus())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .build();
+        BookingGetOwnerDto bookingGetOwnerDto = new BookingGetOwnerDto();
+        bookingGetOwnerDto.setId(booking.getId());
+        bookingGetOwnerDto.setBookerId(booking.getUser().getId());
+        bookingGetOwnerDto.setItemId(booking.getItem().getId());
+        bookingGetOwnerDto.setStatus(booking.getStatus());
+        bookingGetOwnerDto.setStart(booking.getStart());
+        bookingGetOwnerDto.setEnd(booking.getEnd());
+
+        return bookingGetOwnerDto;
     }
 }

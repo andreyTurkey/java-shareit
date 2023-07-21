@@ -10,10 +10,10 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Setter
-@ToString
+@EqualsAndHashCode
+@NoArgsConstructor
 public class BookingDto {
 
     Long id;

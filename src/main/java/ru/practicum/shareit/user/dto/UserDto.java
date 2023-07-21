@@ -7,10 +7,10 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Setter
-@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
 public class UserDto {
 
     Long id;

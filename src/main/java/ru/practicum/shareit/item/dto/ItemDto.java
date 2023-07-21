@@ -7,9 +7,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@EqualsAndHashCode
 @ToString
 public class ItemDto {
 
@@ -25,5 +26,7 @@ public class ItemDto {
 
     @NotNull
     Boolean available;
+
+    Long requestId;
 }
 

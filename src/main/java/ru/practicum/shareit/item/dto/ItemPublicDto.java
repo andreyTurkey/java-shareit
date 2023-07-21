@@ -9,10 +9,10 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Builder
 @Getter
 @Setter
-@ToString
+@NoArgsConstructor
+@EqualsAndHashCode
 public class ItemPublicDto {
 
     Long id;
@@ -33,4 +33,6 @@ public class ItemPublicDto {
     BookingGetOwnerDto nextBooking;
 
     List<CommentPublicDto> comments;
+
+    Long requestId;
 }
