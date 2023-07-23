@@ -27,7 +27,7 @@ public class ItemRequestController {
     final String USER_ID = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemRequestDto addUser(@Valid @RequestBody ItemRequestDto itemRequestDto,
+    public ItemRequestDto addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
                                   @RequestHeader(value = USER_ID) Long userId) {
         log.debug(itemRequestDto + " - получен запрос на  добавление");
         itemRequestDto.setUserId(userId);
