@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityNotFoundException;
 
+
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {

@@ -20,6 +20,7 @@ public class UserController {
     @PostMapping
     public UserDto addUser(@Valid @RequestBody UserDto userDto) {
         log.debug(userDto + " - пользователь был добавлен");
+        log.error(userDto + " - ЗАПРОС НА ДОБАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯ");
         return userService.addUser(userDto);
     }
 

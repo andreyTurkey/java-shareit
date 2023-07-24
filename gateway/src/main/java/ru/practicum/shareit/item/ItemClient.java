@@ -8,9 +8,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.BaseClient;
-import ru.practicum.shareit.item.dto.CommentAddDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.dto.CommentAddDto;
+import ru.practicum.shareit.dto.ItemDto;
+import ru.practicum.shareit.dto.ItemUpdateDto;
 
 @Service
 public class ItemClient extends BaseClient {
@@ -27,12 +27,12 @@ public class ItemClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> addItem(ItemDto itemDto) {
-        return post("", itemDto);
+    public ResponseEntity<Object> addItem(long userId, ItemDto itemDto) {
+        return post("", userId,  itemDto);
     }
 
     public ResponseEntity<Object> updateItem(ItemUpdateDto itemUpdateDto, long userId, long itemId) {
-        return patch("/" + itemId, itemUpdateDto);
+        return patch("/" + itemId, userId, itemUpdateDto);
     }
 
     public ResponseEntity<Object> findByIdAndOwner(long itemId, long userId) {

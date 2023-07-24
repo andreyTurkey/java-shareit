@@ -7,13 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemRequestPublicDto;
+import ru.practicum.shareit.dto.ItemRequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Validated
 @Slf4j
@@ -30,7 +27,7 @@ public class ItemRequestController {
     @PostMapping
     public ResponseEntity<Object> addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
                                           @RequestHeader(value = USER_ID) Long userId) {
-        return itemRequestClient.addRequest(itemRequestDto);
+        return itemRequestClient.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping(value = "/{requestId}")

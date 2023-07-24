@@ -8,9 +8,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.BaseClient;
-import ru.practicum.shareit.item.dto.CommentAddDto;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemUpdateDto;
+import ru.practicum.shareit.dto.ItemRequestDto;
+
+import java.util.Map;
 
 @Service
 public class ItemRequestClient extends BaseClient {
@@ -27,27 +27,23 @@ public class ItemRequestClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> addItem(ItemDto itemDto) {
-        return post("", itemDto);
+    public ResponseEntity<Object> addRequest(long userId, ItemRequestDto itemRequestDto) {
+        return post("", userId,  itemRequestDto);
     }
 
-    public ResponseEntity<Object> updateItem(ItemUpdateDto itemUpdateDto, long userId, long itemId) {
-        return patch("/" + itemId, itemUpdateDto);
+    public ResponseEntity<Object> getRequestById(long requestId, long userId) {
+        return get("/" + requestId, userId);
     }
 
-    public ResponseEntity<Object> findByIdAndOwner(long itemId, long userId) {
-        return get("/" + itemId, userId);
-    }
-
-    public ResponseEntity<Object> findAllByUser(long userId) {
+    public ResponseEntity<Object> getAllRequestByUserId(long userId) {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> getItemByParam(String text) {
-        return get("/search?text="+text);
-    }
-
-    public ResponseEntity<Object> addComment(CommentAddDto commentAddDto) {
-        return post("/{itemId}/comment", commentAddDto.getItemId(), commentAddDto);
+    public ResponseEntity<Object> getAllRequestByPageable(Integer from, Integer size, long userId) {
+        Map<String, Object> parameters = Map.of(
+                "from", from,
+                "size", size
+        );
+        return get("/all?{from}&size={size}", userId, parameters);
     }
 }
