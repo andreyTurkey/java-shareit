@@ -40,10 +40,14 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllRequestByPageable(Integer from, Integer size, long userId) {
-        Map<String, Object> parameters = Map.of(
-                "from", from,
-                "size", size
-        );
-        return get("/all?{from}&size={size}", userId, parameters);
+        if (from != null) {
+            Map<String, Object> parameters = Map.of(
+                    "from", from,
+                    "size", size
+            );
+            return get("/all?from={from}&size={size}", userId, parameters);
+        } else {
+            return get("/all", userId);
+        }
     }
 }

@@ -14,7 +14,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     Optional<Item> findById(Long itemId);
 
-    List<Item> findAllByOwner(Long userId);
+    List<Item> findAllByOwnerOrderByIdDesc(Long userId);
 
     List<Item> findByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(String name, String description);
 
@@ -28,5 +28,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Booking> getAllBookingByOwnerIdAndItemId(@Param("ownerId")Long ownerId, @Param("itemId")Long itemId);
 
     @Query("SELECT b from Booking b join Item i on b.item.id = i.id WHERE i.owner =:id ORDER BY b.id DESC")
-    public List<Booking> getAllBookingByOwnerId(@Param("id") Long ownerId);
+    List<Booking> getAllBookingByOwnerId(@Param("id") Long ownerId);
 }

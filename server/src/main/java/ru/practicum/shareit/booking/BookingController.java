@@ -18,7 +18,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
-    private BookingService bookingServiceDB;
+    private BookingService bookingService;
 
     private final String USER_ID = "X-Sharer-User-Id";
 
@@ -27,7 +27,7 @@ public class BookingController {
                                  @RequestHeader(value = USER_ID) Long bookerId) {
         log.debug(bookingAddDto + " - получен запрос на добавление вещи");
         bookingAddDto.setUserId(bookerId);
-        return bookingServiceDB.addBooking(bookingAddDto);
+        return bookingService.addBooking(bookingAddDto);
     }
 
     @PatchMapping(value = "/{bookingId}")
@@ -35,7 +35,7 @@ public class BookingController {
                                    @PathVariable("bookingId") Long bookingId,
                                    @RequestParam(value = "approved") Boolean approved) {
         log.debug("Получен запрос на изменение статуса бронирования с ID = {} на статус {}", bookingId, approved);
-        return bookingServiceDB.updateStatus(bookerId, bookingId, approved);
+        return bookingService.updateStatus(bookerId, bookingId, approved);
     }
 
     @GetMapping(value = "/{bookingId}")
@@ -43,7 +43,7 @@ public class BookingController {
             @PathVariable("bookingId") Long bookingId,
             @RequestHeader(value = USER_ID) Long userId) {
         log.debug("Бронирование с ID = {} было запрошена", bookingId);
-        return bookingServiceDB.getBookingById(bookingId, userId, userId);
+        return bookingService.getBookingById(bookingId, userId, userId);
     }
 
     @GetMapping
@@ -52,8 +52,9 @@ public class BookingController {
                                                              defaultValue = "ALL") String state,
                                                      @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
                                                      @RequestParam(value = "size", required = false) Integer size) {
+        log.error("ЗАПРОС STATE={} ДЛЯ ПОЛЬЗОВАТЕЛЯ {}", state, bookerId);
         log.debug("Запрошены все бронирования пользователя ID = {}", bookerId);
-        return bookingServiceDB.getAllBookingsByUserId(bookerId, state, from, size);
+        return bookingService.getAllBookingsByUserId(bookerId, state, from, size);
     }
 
     @GetMapping(value = "/owner")
@@ -63,6 +64,6 @@ public class BookingController {
                                                     @RequestParam(value = "state",
                                                             defaultValue = "ALL") String state) {
         log.debug("Запрошены все бронирования пользователя ID = {}", ownerId);
-        return bookingServiceDB.getAllBookingsByOwnerId(ownerId, state, from, size);
+        return bookingService.getAllBookingsByOwnerId(ownerId, state, from, size);
     }
 }

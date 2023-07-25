@@ -82,7 +82,7 @@ public class ItemService {
 
         List<ItemPublicDto> convertedItems = new ArrayList<>();
 
-        List<Item> itemsByOwner = itemRepository.findAllByOwner(ownerId);
+        List<Item> itemsByOwner = itemRepository.findAllByOwnerOrderByIdDesc(ownerId);
 
         List<Booking> allBookingsAllItemsByOwner = itemRepository.getAllBookingByOwnerId(ownerId);
 
@@ -100,8 +100,22 @@ public class ItemService {
                     allCommentByItemByUser,
                     getLastAndNextBooking));
         }
-        return convertedItems;
+        return convertedItems.stream()
+                .sorted((t,t1) -> {
+                    if (t.getNextBooking() != null && t1.getNextBooking() != null) {
+                        if (t.getNextBooking().getStart().isAfter(t1.getNextBooking().getStart())) {
+                            return 1;
+                        } else if (t.getNextBooking().getStart().isBefore(t1.getNextBooking().getStart())) {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+                    } else {
+                        return -1;
+                    }
+                }).collect(Collectors.toList());
     }
+
 
     private List<BookingGetOwnerDto> getLastAndNextBooking(Long itemId, List<Booking> allBookingByUser) {
         List<BookingGetOwnerDto> lastAndNextBooking = new ArrayList<>();

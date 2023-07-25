@@ -12,6 +12,8 @@ import ru.practicum.shareit.dto.CommentAddDto;
 import ru.practicum.shareit.dto.ItemDto;
 import ru.practicum.shareit.dto.ItemUpdateDto;
 
+import java.util.Map;
+
 @Service
 public class ItemClient extends BaseClient {
 
@@ -47,7 +49,8 @@ public class ItemClient extends BaseClient {
         return get("/search?text="+text);
     }
 
-    public ResponseEntity<Object> addComment(CommentAddDto commentAddDto) {
-        return post("/{itemId}/comment", commentAddDto.getItemId(), commentAddDto);
+    public ResponseEntity<Object> addComment(long itemId, long userId, CommentAddDto commentAddDto) {
+        Map<String, Object> parameters = Map.of("itemId", itemId);
+        return post("/{itemId}/comment", userId, parameters, commentAddDto);
     }
 }

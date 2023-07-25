@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
+@Slf4j
 @Validated
 @RestController
 @AllArgsConstructor
@@ -30,7 +32,7 @@ public class BookingController {
     public ResponseEntity<Object> updateStatus(@RequestHeader(value = USER_ID) Long bookerId,
                                    @PathVariable("bookingId") Long bookingId,
                                    @RequestParam(value = "approved") Boolean approved) {
-        return bookingClient.updateStatus(bookerId, bookingId, approved);
+        return bookingClient.updateStatus(bookerId, bookingId, approved); // (Long bookerId, Long bookingId, Boolean approved)
     }
 
     @GetMapping(value = "/{bookingId}")
@@ -55,6 +57,6 @@ public class BookingController {
                                                     @RequestParam(value = "size", required = false) Integer size,
                                                     @RequestParam(value = "state",
                                                             defaultValue = "ALL") String state) {
-        return bookingClient.getBookingsByOwnerId(ownerId, state, from, size);
+        return bookingClient.getBookingsByOwnerId(ownerId, BookingState.getBookingState(state), from, size);
     }
 }

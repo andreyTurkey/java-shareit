@@ -11,10 +11,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findAllByItemId(Long itemId);
 
-/*    @Query(value = "select *\n" +
-            "from comments as c\n" +
-            "join items i on c.item_id = i.id\n" +
-            "where owner = ?1\n" +
-            "order by id DESC;", nativeQuery = true)
-    List<Comment> findCommentByAllItemByUserId(Long userId);*/
+    @Query("select c from Comment as c join Item i on c.item.id = i.id where i.owner =:id order by c.id DESC")
+    List<Comment> findCommentByAllItemByUserId(@Param("id") Long userId);
 }
