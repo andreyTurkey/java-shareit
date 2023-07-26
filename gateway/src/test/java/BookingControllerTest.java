@@ -1,5 +1,3 @@
-
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,7 +120,7 @@ public class BookingControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
-   @Test
+    @Test
     void getItemByIdByUserIdTest() throws Exception {
         Mockito.when(bookingClient.getBooking(ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong()))
                 .thenReturn(objectResponseEntity);
