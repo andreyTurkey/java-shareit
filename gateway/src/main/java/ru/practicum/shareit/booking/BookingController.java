@@ -20,16 +20,16 @@ public class BookingController {
 
     private final BookingClient bookingClient;
 
-    private final String USER_ID = "X-Sharer-User-Id";
+    private final String userFromHeader = "X-Sharer-User-Id";
 
     @PostMapping
     public ResponseEntity<Object> addBooking(@Valid @RequestBody BookingAddDto body,
-                                             @Positive @RequestHeader(value = USER_ID) Long bookerId) {
+                                             @Positive @RequestHeader(value = userFromHeader) Long bookerId) {
         return bookingClient.addBooking(bookerId, body);
     }
 
     @PatchMapping(value = "/{bookingId}")
-    public ResponseEntity<Object> updateStatus(@RequestHeader(value = USER_ID) Long bookerId,
+    public ResponseEntity<Object> updateStatus(@RequestHeader(value = userFromHeader) Long bookerId,
                                    @PathVariable("bookingId") Long bookingId,
                                    @RequestParam(value = "approved") Boolean approved) {
         return bookingClient.updateStatus(bookerId, bookingId, approved); // (Long bookerId, Long bookingId, Boolean approved)
@@ -38,12 +38,12 @@ public class BookingController {
     @GetMapping(value = "/{bookingId}")
     public ResponseEntity<Object> getBookingByIdByUserId(
             @PathVariable("bookingId") Long bookingId,
-            @RequestHeader(value = USER_ID) Long userId) {
+            @RequestHeader(value = userFromHeader) Long userId) {
         return bookingClient.getBooking(bookingId, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllBookingsByBookerId(@RequestHeader(value = USER_ID) Long bookerId,
+    public ResponseEntity<Object> getAllBookingsByBookerId(@RequestHeader(value = userFromHeader) Long bookerId,
                                                      @RequestParam(value = "state",
                                                              defaultValue = "ALL") String state,
                                                      @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
@@ -52,7 +52,7 @@ public class BookingController {
     }
 
     @GetMapping(value = "/owner")
-    public ResponseEntity<Object> getAllBookingsByOwnerId(@RequestHeader(value = USER_ID) Long ownerId,
+    public ResponseEntity<Object> getAllBookingsByOwnerId(@RequestHeader(value = userFromHeader) Long ownerId,
                                                     @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
                                                     @RequestParam(value = "size", required = false) Integer size,
                                                     @RequestParam(value = "state",

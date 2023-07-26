@@ -22,27 +22,27 @@ public class ItemRequestController {
 
     final ItemRequestClient itemRequestClient;
 
-    final String USER_ID = "X-Sharer-User-Id";
+    final String userFromHeader = "X-Sharer-User-Id";
 
     @PostMapping
     public ResponseEntity<Object> addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                                          @RequestHeader(value = USER_ID) Long userId) {
+                                          @RequestHeader(value = userFromHeader) Long userId) {
         return itemRequestClient.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping(value = "/{requestId}")
-    public ResponseEntity<Object> getRequestById(@RequestHeader(value = USER_ID) Long userId,
+    public ResponseEntity<Object> getRequestById(@RequestHeader(value = userFromHeader) Long userId,
                                                @PathVariable Long requestId) {
         return itemRequestClient.getRequestById(requestId, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllRequestByUserId(@RequestHeader(value = USER_ID) Long userId) {
+    public ResponseEntity<Object> getAllRequestByUserId(@RequestHeader(value = userFromHeader) Long userId) {
         return itemRequestClient.getAllRequestByUserId(userId);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getRequestByParam(@RequestHeader(value = USER_ID) Long userId, @PositiveOrZero
+    public ResponseEntity<Object> getRequestByParam(@RequestHeader(value = userFromHeader) Long userId, @PositiveOrZero
                                                         @RequestParam(value = "from", required = false) Integer from,
                                                         @RequestParam(value = "size", required = false) Integer size) {
         return itemRequestClient.getAllRequestByPageable(from, size, userId);
