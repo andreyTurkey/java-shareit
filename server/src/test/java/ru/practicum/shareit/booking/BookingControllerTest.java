@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,16 +13,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.dto.BookingAddDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,10 +93,11 @@ public class BookingControllerTest {
         mvc.perform(post("/bookings")
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .content(mapper.writeValueAsString(bookingAddDto))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class));
     }
 
     @Test
@@ -113,10 +115,12 @@ public class BookingControllerTest {
         mvc.perform(patch("/bookings/{bookingId}", 1L)
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .param("approved", String.valueOf(true))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
+                .andExpect(jsonPath("$.status", is(bookingDto.getStatus())));
     }
 
     @Test
@@ -126,10 +130,12 @@ public class BookingControllerTest {
 
         mvc.perform(get("/bookings/{bookingId}", 1L)
                         .header("X-Sharer-User-Id", String.valueOf(1L))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
+                .andExpect(jsonPath("$.status", is(bookingDto.getStatus())));
     }
 
     @Test
@@ -141,10 +147,11 @@ public class BookingControllerTest {
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .param("from", "1")
                         .param("size", "2")
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(bookingDto.getId()), Long.class));
     }
 
     @Test
@@ -156,9 +163,10 @@ public class BookingControllerTest {
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .param("from", "1")
                         .param("size", "2")
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id", is(bookingDto.getId()), Long.class));
     }
 }

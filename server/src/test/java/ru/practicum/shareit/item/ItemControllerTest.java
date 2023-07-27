@@ -1,4 +1,4 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,10 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.practicum.shareit.item.ItemController;
-import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -72,11 +69,11 @@ public class ItemControllerTest {
         mvc.perform(post("/items")
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect((ResultMatcher) jsonPath("$.id", is(itemDto.getId()), Long.class))
+                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
@@ -97,11 +94,11 @@ public class ItemControllerTest {
         mvc.perform(patch("/items/{itemId}", 1L)
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect((ResultMatcher) jsonPath("$.id", is(itemUpdateDtoName.getId()), Long.class))
+                .andExpect(jsonPath("$.id", is(itemUpdateDtoName.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemUpdateDtoName.getName())))
                 .andExpect(jsonPath("$.description", is(itemUpdateDtoName.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemUpdateDtoName.getAvailable())));
@@ -115,7 +112,7 @@ public class ItemControllerTest {
         mvc.perform(get("/items")
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -132,11 +129,11 @@ public class ItemControllerTest {
         mvc.perform(get("/items/{itemId}", 1L)
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .content(mapper.writeValueAsString(itemPublicDto))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect((ResultMatcher) jsonPath("$.id", is(itemPublicDto.getId()), Long.class))
+                .andExpect(jsonPath("$.id", is(itemPublicDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemPublicDto.getName())))
                 .andExpect(jsonPath("$.description", is(itemPublicDto.getDescription())))
                 .andExpect(jsonPath("$.available", is(itemPublicDto.getAvailable())));
@@ -151,7 +148,7 @@ public class ItemControllerTest {
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .param("text", "Text")
                         .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -175,11 +172,11 @@ public class ItemControllerTest {
         mvc.perform(post("/items/{itemId}/comment", 1L)
                         .header("X-Sharer-User-Id", String.valueOf(1L))
                         .content(mapper.writeValueAsString(commentAddDto))
-                        .characterEncoding(String.valueOf(StandardCharsets.UTF_8))
+                        .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect((ResultMatcher) jsonPath("$.id", is(commentDto.getId()), Long.class))
+                .andExpect(jsonPath("$.id", is(commentDto.getId()), Long.class))
                 .andExpect(jsonPath("$.item.name", is(commentDto.getItem().getName())))
                 .andExpect(jsonPath("$.text", is(commentDto.getText())));
     }
