@@ -29,8 +29,7 @@ public class UserServiceUnitTest {
         user.setEmail("mail@mail.ru");
 
         Mockito
-                .when(mockUserRepository.save(user)).
-                thenReturn(user);
+                .when(mockUserRepository.save(user)).thenReturn(user);
 
         Assertions.assertEquals(UserMapper.getUserDto(user), userService.addUser(UserMapper.getUserDto(user)));
     }
@@ -51,12 +50,10 @@ public class UserServiceUnitTest {
         user.setEmail("mail@mail.ru");
 
         Mockito
-                .when(mockUserRepository.getReferenceById(Mockito.anyLong())).
-                thenReturn(user);
+                .when(mockUserRepository.getReferenceById(Mockito.anyLong())).thenReturn(user);
 
         Mockito
-                .when(mockUserRepository.save(user)).
-                thenReturn(user);
+                .when(mockUserRepository.save(user)).thenReturn(user);
 
         Assertions.assertEquals(UserMapper.getUserDtoFromUpdateDto(userUpdateDto), userService.updateUser(userUpdateDto));
     }
@@ -83,11 +80,9 @@ public class UserServiceUnitTest {
         user.setEmail("mail@mail.ru");
 
         Mockito
-                .when(mockUserRepository.findAll()).
-                thenReturn(List.of(user));
+                .when(mockUserRepository.findAll()).thenReturn(List.of(user));
 
-        Assertions.assertEquals(List.of(user).size(),
-                userService.getAllUsers().size());
+        Assertions.assertEquals(List.of(user).size(), userService.getAllUsers().size());
 
         Assertions.assertEquals(List.of(user).stream().map(UserMapper::getUserDto).collect(Collectors.toList()),
                 userService.getAllUsers());

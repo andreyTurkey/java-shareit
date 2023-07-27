@@ -52,8 +52,7 @@ public class ItemServiceUnitTest {
         item.setOwner(1L);
 
         Mockito
-                .when(mockItemRepository.save(item)).
-                thenReturn(item);
+                .when(mockItemRepository.save(item)).thenReturn(item);
 
         Assertions.assertEquals(item, ItemMapper.getItem(itemService.addItem(ItemMapper.getItemDto(item))));
     }
@@ -93,12 +92,10 @@ public class ItemServiceUnitTest {
         itemUpdateDtoName.setName("ItemUpdate");
 
         Mockito
-                .when(mockItemRepository.getReferenceById(Mockito.anyLong())).
-                thenReturn(item);
+                .when(mockItemRepository.getReferenceById(Mockito.anyLong())).thenReturn(item);
 
         Mockito
-                .when(mockItemRepository.save(item)).
-                thenReturn(item);
+                .when(mockItemRepository.save(item)).thenReturn(item);
 
         Assertions.assertEquals(ItemMapper.getItemDto(updatedItemName), itemService.updateItem(
                 itemUpdateDtoName, 1L, 1L));
