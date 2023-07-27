@@ -18,7 +18,7 @@ services:
     ports:
       - "9090:9090"
     depends_on:
-    - db
+      - db
     environment:
       - URL=jdbc:postgresql://db:5432/shareit
       - POSTGRES_USER=andr
