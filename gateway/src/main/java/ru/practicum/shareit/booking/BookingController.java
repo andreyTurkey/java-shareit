@@ -57,6 +57,6 @@ public class BookingController {
                                                     @RequestParam(value = "size", required = false) Integer size,
                                                     @RequestParam(value = "state",
                                                             defaultValue = "ALL") String state) {
-        return bookingClient.getBookingsByOwnerId(ownerId, BookingState.getBookingState(state), from, size);
+        return bookingClient.getBookingsByOwnerId(ownerId, state, from, size);
     }
 }
