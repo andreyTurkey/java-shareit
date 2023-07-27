@@ -46,7 +46,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getItemByParam(String text) {
-        return get("/search?text="+text);
+        return get("/search?text=" + text);
     }
 
     public ResponseEntity<Object> addComment(long itemId, long userId, CommentAddDto commentAddDto) {

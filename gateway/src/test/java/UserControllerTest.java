@@ -54,12 +54,12 @@ class UserControllerTest {
         userDto.setEmail("john.doe@mail.com");
 
         userUpdateDto = new UserUpdateDto();
-        userUpdateDto.setId(1l);
+        userUpdateDto.setId(1L);
         userUpdateDto.setEmail("updated@mail.com");
 
 
         userUpdateEmailDto = new UserDto();
-        userUpdateEmailDto.setId(1l);
+        userUpdateEmailDto.setId(1L);
         userUpdateEmailDto.setName("John");
         userUpdateEmailDto.setEmail("updated@mail.com");
 

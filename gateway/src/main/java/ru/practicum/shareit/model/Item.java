@@ -18,7 +18,7 @@ import java.util.Objects;
 public class Item {
 
     @Id
-    @Column(name="id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
