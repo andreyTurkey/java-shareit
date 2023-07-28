@@ -20,18 +20,18 @@ public class BookingController {
 
     private BookingService bookingService;
 
-    private final String userFromHeader = "X-Sharer-User-Id";
+    private static final String USER_FROM_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public BookingDto addBooking(@Valid @RequestBody BookingAddDto bookingAddDto,
-                                 @RequestHeader(value = userFromHeader) Long bookerId) {
+                                 @RequestHeader(value = USER_FROM_HEADER) Long bookerId) {
         log.debug(bookingAddDto + " - получен запрос на добавление вещи");
         bookingAddDto.setUserId(bookerId);
         return bookingService.addBooking(bookingAddDto);
     }
 
     @PatchMapping(value = "/{bookingId}")
-    public BookingDto updateStatus(@RequestHeader(value = userFromHeader) Long bookerId,
+    public BookingDto updateStatus(@RequestHeader(value = USER_FROM_HEADER) Long bookerId,
                                    @PathVariable("bookingId") Long bookingId,
                                    @RequestParam(value = "approved") Boolean approved) {
         log.debug("Получен запрос на изменение статуса бронирования с ID = {} на статус {}", bookingId, approved);
@@ -41,13 +41,13 @@ public class BookingController {
     @GetMapping(value = "/{bookingId}")
     public BookingDto getBookingByIdByUserId(
             @PathVariable("bookingId") Long bookingId,
-            @RequestHeader(value = userFromHeader) Long userId) {
+            @RequestHeader(value = USER_FROM_HEADER) Long userId) {
         log.debug("Бронирование с ID = {} было запрошена", bookingId);
         return bookingService.getBookingById(bookingId, userId, userId);
     }
 
     @GetMapping
-    public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = userFromHeader) Long bookerId,
+    public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = USER_FROM_HEADER) Long bookerId,
                                                      @RequestParam(value = "state",
                                                              defaultValue = "ALL") String state,
                                                      @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
@@ -58,7 +58,7 @@ public class BookingController {
     }
 
     @GetMapping(value = "/owner")
-    public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = userFromHeader) Long ownerId,
+    public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = USER_FROM_HEADER) Long ownerId,
                                                     @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
                                                     @RequestParam(value = "size", required = false) Integer size,
                                                     @RequestParam(value = "state",

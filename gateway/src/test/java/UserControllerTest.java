@@ -13,8 +13,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.practicum.shareit.dto.UserDto;
-import ru.practicum.shareit.dto.UserUpdateDto;
+import ru.practicum.shareit.user.UserDto;
+import ru.practicum.shareit.user.UserUpdateDto;
 import ru.practicum.shareit.user.UserClient;
 import ru.practicum.shareit.user.UserController;
 

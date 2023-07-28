@@ -14,10 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import ru.practicum.shareit.dto.*;
-import ru.practicum.shareit.item.ItemClient;
-import ru.practicum.shareit.item.ItemController;
+import ru.practicum.shareit.item.*;
 import ru.practicum.shareit.model.User;
+import ru.practicum.shareit.user.UserDto;
 
 import java.nio.charset.StandardCharsets;
 

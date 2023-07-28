@@ -24,11 +24,11 @@ public class ItemRequestController {
 
     final ItemRequestsService itemRequestsService;
 
-    final String userFromHeader = "X-Sharer-User-Id";
+    static final String USER_FROM_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemRequestDto addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                                  @RequestHeader(value = userFromHeader) Long userId) {
+                                  @RequestHeader(value = USER_FROM_HEADER) Long userId) {
         log.debug(itemRequestDto + " - получен запрос на  добавление");
         itemRequestDto.setUserId(userId);
         itemRequestDto.setCreated(LocalDateTime.now());
@@ -36,20 +36,20 @@ public class ItemRequestController {
     }
 
     @GetMapping(value = "/{requestId}")
-    public ItemRequestPublicDto getRequestById(@RequestHeader(value = userFromHeader) Long userId,
+    public ItemRequestPublicDto getRequestById(@RequestHeader(value = USER_FROM_HEADER) Long userId,
                                                @PathVariable Long requestId) {
         log.debug("Получен запрос  запроса с  ID = {} ", requestId);
         return itemRequestsService.getRequestById(requestId, userId);
     }
 
     @GetMapping
-    public List<ItemRequestPublicDto> getAllRequestByUserId(@RequestHeader(value = userFromHeader) Long userId) {
+    public List<ItemRequestPublicDto> getAllRequestByUserId(@RequestHeader(value = USER_FROM_HEADER) Long userId) {
         log.debug("Получен запрос всех пользователей");
         return itemRequestsService.getAllRequestByUserId(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestPublicDto> getRequestByParam(@RequestHeader(value = userFromHeader) Long userId, @PositiveOrZero
+    public List<ItemRequestPublicDto> getRequestByParam(@RequestHeader(value = USER_FROM_HEADER) Long userId, @PositiveOrZero
                                                         @RequestParam(value = "from", required = false) Integer from,
                                                         @RequestParam(value = "size", required = false) Integer size) {
         log.debug("Получен постраничный запрос запросов ");

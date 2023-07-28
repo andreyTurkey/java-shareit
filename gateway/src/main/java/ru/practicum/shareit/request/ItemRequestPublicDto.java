@@ -1,7 +1,8 @@
-package ru.practicum.shareit.dto;
+package ru.practicum.shareit.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.item.ItemPublicDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

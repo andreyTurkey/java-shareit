@@ -1,18 +1,18 @@
-package ru.practicum.shareit.dto;
+package ru.practicum.shareit.item;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode
-public class ItemPublicDto {
+@ToString
+public class ItemDto {
 
     Long id;
 
@@ -27,11 +27,6 @@ public class ItemPublicDto {
     @NotNull
     Boolean available;
 
-    BookingGetOwnerDto lastBooking;
-
-    BookingGetOwnerDto nextBooking;
-
-    List<CommentPublicDto> comments;
-
     Long requestId;
 }
+

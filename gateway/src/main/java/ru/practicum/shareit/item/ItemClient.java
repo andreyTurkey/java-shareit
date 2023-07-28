@@ -8,9 +8,6 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.BaseClient;
-import ru.practicum.shareit.dto.CommentAddDto;
-import ru.practicum.shareit.dto.ItemDto;
-import ru.practicum.shareit.dto.ItemUpdateDto;
 
 import java.util.Map;
 

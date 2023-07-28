@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.dto.ItemRequestDto;
+import ru.practicum.shareit.item.ItemRequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.PositiveOrZero;
@@ -22,27 +22,27 @@ public class ItemRequestController {
 
     final ItemRequestClient itemRequestClient;
 
-    final String userFromHeader = "X-Sharer-User-Id";
+    static final String USER_FROM_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
     public ResponseEntity<Object> addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                                          @RequestHeader(value = userFromHeader) Long userId) {
+                                          @RequestHeader(value = USER_FROM_HEADER) Long userId) {
         return itemRequestClient.addRequest(userId, itemRequestDto);
     }
 
     @GetMapping(value = "/{requestId}")
-    public ResponseEntity<Object> getRequestById(@RequestHeader(value = userFromHeader) Long userId,
+    public ResponseEntity<Object> getRequestById(@RequestHeader(value = USER_FROM_HEADER) Long userId,
                                                @PathVariable Long requestId) {
         return itemRequestClient.getRequestById(requestId, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllRequestByUserId(@RequestHeader(value = userFromHeader) Long userId) {
+    public ResponseEntity<Object> getAllRequestByUserId(@RequestHeader(value = USER_FROM_HEADER) Long userId) {
         return itemRequestClient.getAllRequestByUserId(userId);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getRequestByParam(@RequestHeader(value = userFromHeader) Long userId, @PositiveOrZero
+    public ResponseEntity<Object> getRequestByParam(@RequestHeader(value = USER_FROM_HEADER) Long userId, @PositiveOrZero
                                                         @RequestParam(value = "from", required = false) Integer from,
                                                         @RequestParam(value = "size", required = false) Integer size) {
         return itemRequestClient.getAllRequestByPageable(from, size, userId);

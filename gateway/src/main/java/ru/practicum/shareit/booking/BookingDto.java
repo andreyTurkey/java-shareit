@@ -1,8 +1,9 @@
-package ru.practicum.shareit.dto;
+package ru.practicum.shareit.booking;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.booking.BookingState;
+import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.user.UserDto;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -12,12 +13,13 @@ import java.time.LocalDateTime;
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
-public class BookingAddDto {
+public class BookingDto {
+
     Long id;
 
-    Long itemId;
+    ItemDto item;
 
-    Long userId;
+    UserDto booker;
 
     BookingState status;
 

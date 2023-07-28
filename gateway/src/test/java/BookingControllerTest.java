@@ -17,10 +17,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ru.practicum.shareit.booking.BookingClient;
 import ru.practicum.shareit.booking.BookingController;
-import ru.practicum.shareit.dto.BookingAddDto;
-import ru.practicum.shareit.dto.BookingDto;
-import ru.practicum.shareit.dto.ItemDto;
-import ru.practicum.shareit.dto.UserDto;
+import ru.practicum.shareit.booking.BookingAddDto;
+import ru.practicum.shareit.booking.BookingDto;
+import ru.practicum.shareit.item.ItemDto;
+import ru.practicum.shareit.user.UserDto;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 

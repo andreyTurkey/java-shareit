@@ -1,26 +1,24 @@
-package ru.practicum.shareit.dto;
+package ru.practicum.shareit.item;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
 @EqualsAndHashCode
 @NoArgsConstructor
-public class CommentAddDto {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class ItemRequestDto {
 
     Long id;
 
-    Long itemId;
+    @NotNull
+    String description;
 
     Long userId;
-
-    @NotBlank
-    String text;
 
     LocalDateTime created;
 }
