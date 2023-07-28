@@ -4,8 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
@@ -22,18 +20,15 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @NotBlank(message = "NAME can't be empty.")
     @Column(name = "name", nullable = false)
     String name;
 
-    @NotNull(message = "DESCRIPTION can't be empty.")
     @Column(name = "description", nullable = false)
     String description;
 
     @Column(name = "owner")
     Long owner;
 
-    @NotNull
     @Column(name = "available", nullable = false)
     Boolean available;
 

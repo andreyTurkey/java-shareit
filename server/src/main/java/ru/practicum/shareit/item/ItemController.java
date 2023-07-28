@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 
-import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class ItemController {
     private static final String USER_FROM_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemDto addItem(@Valid @RequestBody ItemDto itemDto, @RequestHeader(value = USER_FROM_HEADER) Long userId) {
+    public ItemDto addItem(@RequestBody ItemDto itemDto, @RequestHeader(value = USER_FROM_HEADER) Long userId) {
         log.debug(itemDto + " - получен запрос на добавление вещи");
         itemDto.setOwner(userId);
         return itemService.addItem(itemDto);
@@ -55,7 +54,7 @@ public class ItemController {
     }
 
     @PostMapping(value = "/{itemId}/comment")
-    public CommentDto addComment(@PathVariable("itemId") Long itemId, @Valid @RequestBody CommentAddDto commentAddDto,
+    public CommentDto addComment(@PathVariable("itemId") Long itemId, @RequestBody CommentAddDto commentAddDto,
                                  @RequestHeader(value = USER_FROM_HEADER) Long userId) {
         log.debug(commentAddDto + " - получен запрос на добавление отзыва");
         commentAddDto.setUserId(userId);

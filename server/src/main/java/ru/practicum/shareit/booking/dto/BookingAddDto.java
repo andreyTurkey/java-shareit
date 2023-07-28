@@ -4,7 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.BookingState;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -21,9 +20,7 @@ public class BookingAddDto {
 
     BookingState status;
 
-    @NotNull
     LocalDateTime start;
 
-    @NotNull
     LocalDateTime end;
 }

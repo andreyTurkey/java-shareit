@@ -3,7 +3,6 @@ package ru.practicum.shareit.request.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Getter
@@ -15,7 +14,6 @@ public class ItemRequestDto {
 
     Long id;
 
-    @NotNull
     String description;
 
     Long userId;

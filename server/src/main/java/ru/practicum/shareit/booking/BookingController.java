@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingAddDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Validated
@@ -23,7 +21,7 @@ public class BookingController {
     private static final String USER_FROM_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public BookingDto addBooking(@Valid @RequestBody BookingAddDto bookingAddDto,
+    public BookingDto addBooking(@RequestBody BookingAddDto bookingAddDto,
                                  @RequestHeader(value = USER_FROM_HEADER) Long bookerId) {
         log.debug(bookingAddDto + " - получен запрос на добавление вещи");
         bookingAddDto.setUserId(bookerId);
@@ -50,7 +48,7 @@ public class BookingController {
     public List<BookingDto> getAllBookingsByBookerId(@RequestHeader(value = USER_FROM_HEADER) Long bookerId,
                                                      @RequestParam(value = "state",
                                                              defaultValue = "ALL") String state,
-                                                     @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
+                                                     @RequestParam(value = "from", required = false) Integer from,
                                                      @RequestParam(value = "size", required = false) Integer size) {
         log.error("ЗАПРОС STATE={} ДЛЯ ПОЛЬЗОВАТЕЛЯ {}", state, bookerId);
         log.debug("Запрошены все бронирования пользователя ID = {}", bookerId);
@@ -59,7 +57,7 @@ public class BookingController {
 
     @GetMapping(value = "/owner")
     public List<BookingDto> getAllBookingsByOwnerId(@RequestHeader(value = USER_FROM_HEADER) Long ownerId,
-                                                    @RequestParam(value = "from", required = false) @PositiveOrZero Integer from,
+                                                    @RequestParam(value = "from", required = false) Integer from,
                                                     @RequestParam(value = "size", required = false) Integer size,
                                                     @RequestParam(value = "state",
                                                             defaultValue = "ALL") String state) {

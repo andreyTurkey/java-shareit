@@ -6,7 +6,6 @@ import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,9 +23,7 @@ public class BookingDto {
 
     BookingState status;
 
-    @NotNull
     LocalDateTime start;
 
-    @NotNull
     LocalDateTime end;
 }

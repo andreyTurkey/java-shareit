@@ -4,8 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Entity
@@ -22,11 +20,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @NotBlank(message = "NAME can't be empty.")
     @Column(name = "name", nullable = false)
     String name;
 
-    @Email @NotBlank
     @Column(name = "email", nullable = false)
     String email;
 

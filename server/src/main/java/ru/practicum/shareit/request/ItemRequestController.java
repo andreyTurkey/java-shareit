@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestPublicDto;
 
-import javax.validation.Valid;
-import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class ItemRequestController {
     static final String USER_FROM_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemRequestDto addRequest(@Valid @RequestBody ItemRequestDto itemRequestDto,
+    public ItemRequestDto addRequest(@RequestBody ItemRequestDto itemRequestDto,
                                   @RequestHeader(value = USER_FROM_HEADER) Long userId) {
         log.debug(itemRequestDto + " - получен запрос на  добавление");
         itemRequestDto.setUserId(userId);
@@ -49,7 +47,7 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestPublicDto> getRequestByParam(@RequestHeader(value = USER_FROM_HEADER) Long userId, @PositiveOrZero
+    public List<ItemRequestPublicDto> getRequestByParam(@RequestHeader(value = USER_FROM_HEADER) Long userId,
                                                         @RequestParam(value = "from", required = false) Integer from,
                                                         @RequestParam(value = "size", required = false) Integer size) {
         log.debug("Получен постраничный запрос запросов ");
